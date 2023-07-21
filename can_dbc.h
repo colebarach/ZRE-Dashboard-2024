@@ -17,7 +17,7 @@ namespace CanDbc
 
     #define DEBUG_GENERAL
 
-    #define DEBUG_PARSE_ENTRIES
+    // #define DEBUG_PARSE_ENTRIES
 
     // Datatype IDs ---------------------------------------------------------------------------------------------------------------
 

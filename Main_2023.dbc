@@ -1,0 +1,274 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: BMS Accelerometer Inverter Dashboard ECU
+VAL_TABLE_ Discharge 1 "Discharge Enabled" 0 "Discharge Disabled" ;
+VAL_TABLE_ Enabled 1 "Enabled" 0 "Disabled" ;
+VAL_TABLE_ Direction 1 "Forward" 0 "Reverse" ;
+VAL_TABLE_ Fault_POST 1073741824 "Brake Shorted" 536870912 "Reserved" 268435456 "Reserved" 134217728 "Reserved" 67108864 "EEPROM Update Required" 33554432 "EEPROM Data Out of Range" 16777216 "EEPROM Checksum Invalid" 8388608 "Pre-Charge Voltage Failure" 4194304 "Pre-Charge Timeout" 2097152 "DC Bus Voltage Low" 1048576 "DC Bus Voltage High" 524288 "1.5V Sense Voltage High" 262144 "1.5V Sense Voltage Low" 131072 "2.5V Sense Voltage High" 65536 "2.5V Sense Voltage Low" 32768 "12V Sense Voltage High" 16384 "12V Sense Voltage Low" 8192 "5V Sense Voltage High" 4096 "5V Sense Voltage Low" 2048 "Gate Drive PCB Temperature High" 1024 "Gate Drive PCB Temperature Low" 512 "Control PCB Temperature High" 256 "Control PCB Temperature Low" 128 "Module Temperature High" 64 "Module Temperature Low" 32 "Current Sensor High" 16 "Current Sensor Low" 8 "Accelerator Open" 4 "Accelerator Shorted" 2 "HW Over-current Fault" 1 "Hardware Gate/Desaturation Fault" 0 "No Faults" -2147483648 "Brake Open" ;
+VAL_TABLE_ Button 1 "High" 0 "Low" ;
+
+
+BO_ 127 Accelerometer: 8 Vector__XXX
+
+BO_ 1877 ACAN_Sensors: 8 Vector__XXX
+ SG_ ACAN_Sensor4 : 48|16@1+ (1,0) [0|65535] "Hz" Vector__XXX
+ SG_ ACAN_Sensor3 : 32|16@1+ (1,0) [0|65535] "Hz" Vector__XXX
+ SG_ ACAN_Sensor2 : 16|16@1+ (1,0) [0|65535] "Hz" Vector__XXX
+ SG_ ACAN_Sensor1 : 0|16@1+ (1,0) [0|65535] "Hz" Vector__XXX
+
+BO_ 4 Command_Drive_Start: 8 Dashboard
+ SG_ Command_Enter_Drive : 0|1@1+ (1,0) [0|1] "Boolean"  ECU
+
+BO_ 16 Command_Drive_Configuration: 8 Dashboard
+ SG_ State_Regen_Config_Enabled : 32|1@1+ (1,0) [0|1] "Boolean"  ECU
+ SG_ Torque_Config_Limit_Regen : 16|16@1+ (0.1,0) [0|6553.5] "Newton Meters"  ECU
+ SG_ Torque_Config_Limit : 0|16@1+ (0.1,0) [0|6553.5] "Newton Meters"  ECU
+
+BO_ 1332 Calibrate_Brake_Range: 8 Dashboard
+ SG_ Brake_2_Real_Min : 32|10@1+ (1,0) [0|1023] ""  ECU
+ SG_ Brake_2_Real_Max : 48|10@1+ (1,0) [0|1023] ""  ECU
+ SG_ Brake_1_Real_Min : 0|10@1+ (1,0) [0|1023] "ADC"  ECU
+ SG_ Brake_1_Real_Max : 16|10@1+ (1,0) [0|1023] ""  ECU
+
+BO_ 256 Status_BMS_2: 8 BMS
+ SG_ Voltage_BMS : 24|16@1+ (1,0) [0|65535] "Voltage" Vector__XXX
+ SG_ Temperature_BMS_Max : 0|8@1+ (1,0) [0|255] "Celcius" Vector__XXX
+ SG_ State_of_Charge : 16|8@1+ (1,0) [0|255] "Percentage" Vector__XXX
+ SG_ Power_BMS : 8|8@1+ (1,0) [0|255] "KiloWatts" Vector__XXX
+ SG_ Error_BMS_Voltage_Fault : 41|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Error_BMS_Temperature_Fault : 40|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Error_BMS_Sense_Line_Fault : 44|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Error_BMS_Self_Test_Fault : 42|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Current_BMS : 48|16@1+ (0.01,0) [0|655.35] "Amperes" Vector__XXX
+
+BO_ 1331 Calibrate_APPS_Range: 8 Dashboard
+ SG_ APPS_2_Real_Min : 32|10@1+ (1,0) [0|1023] "ADC"  ECU
+ SG_ APPS_2_Real_Max : 48|10@1+ (1,0) [0|1023] "ADC"  ECU
+ SG_ APPS_1_Real_Min : 0|10@1+ (1,0) [0|1023] "ADC"  ECU
+ SG_ APPS_1_Real_Max : 16|10@1+ (1,0) [0|1023] "ADC"  ECU
+
+BO_ 171 Error_Inverter_Fault: 8 Inverter
+ SG_ Error_Inverter_Run_Fault : 32|32@1+ (1,0) [0|4294967295] "Word"  ECU
+ SG_ Error_Inverter_POST_Fault : 0|32@1+ (1,0) [0|4294967295] "Word"  ECU
+
+BO_ 1795 Status_ECU: 8 ECU
+ SG_ Error_BSPD_Fault : 19|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Resistance_IMD : 32|8@1+ (10000,0) [0|2550000] "Ohms" Vector__XXX
+ SG_ Voltage_LV_Battery : 24|8@1+ (0.0625,0) [0|15.9375] "Volts" Vector__XXX
+ SG_ Error_IMD_Fault : 18|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ State_Braking : 17|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ State_Accelerating : 16|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ State_Regen_Enabled : 2|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ State_Ready_to_Drive : 0|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ State_High_Voltage : 1|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_Torque : 8|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_Pedals : 10|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_Pedal_100ms : 9|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_Brakes_Calibration : 14|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_Brakes : 13|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_APPS_Calibration : 12|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_APPS_25_5 : 15|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+ SG_ Plausibility_APPS : 11|1@1+ (1,0) [0|1] "Boolean" Vector__XXX
+
+BO_ 1793 Data_Pedals: 8 ECU
+ SG_ Brake_2_Percent : 48|16@1- (0.1,0) [-3276.8|3276.7] "Percent"  Dashboard
+ SG_ Brake_1_Percent : 32|16@1- (0.1,0) [-3276.8|3276.7] "Percent"  Dashboard
+ SG_ APPS_2_Percent : 16|16@1- (0.1,0) [-3276.8|3276.7] "Percent"  Dashboard
+ SG_ APPS_1_Percent : 0|16@1- (0.1,0) [-3276.8|3276.7] "Percent"  Dashboard
+
+BO_ 192 Command_Inverter: 8 ECU
+ SG_ Torque_Limit : 48|16@1- (0.1,0) [-3276.8|3276.7] "Newton Meters"  Inverter
+ SG_ Speed_Mode : 42|1@1+ (1,0) [0|1] "Boolean"  Inverter
+ SG_ Inverter_Discharge : 41|1@1+ (1,0) [0|1] "Boolean"  Inverter
+ SG_ Inverter_Enable : 40|1@1+ (1,0) [0|1] "Boolean"  Inverter
+ SG_ Inverter_Direction : 32|1@1+ (1,0) [0|1] "Boolean"  Inverter
+ SG_ Speed_Target : 16|16@1- (1,0) [-32768|32767] "RPM"  Inverter
+ SG_ Torque_Target : 0|16@1- (0.1,0) [-3276.8|3276.7] "Newton Meters"  Inverter
+
+BO_ 168 Data_Flux: 8 Inverter
+ SG_ Current_Q_Axis : 48|16@1- (0.1,0) [-3276.8|3276.7] "Amps" Vector__XXX
+ SG_ Current_D_Axis : 32|16@1- (0.1,0) [-3276.8|3276.7] "Amps" Vector__XXX
+ SG_ Flux_Motor : 16|16@1- (0.001,0) [-32.768|32.767] "Webers" Vector__XXX
+ SG_ Flux_Motor_Target : 0|16@1- (0.001,0) [-32.768|32.767] "Webers" Vector__XXX
+
+BO_ 167 Data_Voltage: 8 Inverter
+ SG_ Voltage_Q_Axis : 48|16@1- (0.1,0) [-3276.8|3276.7] "Volts" Vector__XXX
+ SG_ Voltage_D_Axis : 32|16@1- (0.1,0) [-3276.8|3276.7] "Volts" Vector__XXX
+ SG_ Voltage_Inverter_Output : 16|16@1- (0.1,0) [-3276.8|3276.7] "Volts" Vector__XXX
+ SG_ Voltage_DC_Bus : 0|16@1- (0.1,0) [-3276.8|3276.7] "Volts" Vector__XXX
+
+BO_ 166 Data_Current: 8 Inverter
+ SG_ Current_DC_Bus : 48|16@1- (0.1,0) [-3276.8|3276.7] "Amps" Vector__XXX
+ SG_ Current_Phase_C : 32|16@1- (0.1,0) [-3276.8|3276.7] "Amps" Vector__XXX
+ SG_ Current_Phase_B : 16|16@1- (0.1,0) [-3276.8|3276.7] "Amps" Vector__XXX
+ SG_ Current_Phase_A : 0|16@1- (0.1,0) [-3276.8|3276.7] "Amps" Vector__XXX
+
+BO_ 165 Data_Motor: 8 Inverter
+ SG_ Motor_Filtered_Delta_Resolver : 48|16@1- (0.1,0) [-359.9|359.9] "Degrees" Vector__XXX
+ SG_ Motor_Frequency : 32|16@1- (0.1,0) [-3276.8|3276.7] "Hz" Vector__XXX
+ SG_ Motor_Speed : 16|16@1- (1,0) [-32768|32767] "RPM" Vector__XXX
+ SG_ Motor_Angle : 0|16@1- (0.1,0) [-359.9|359.9] "Degrees" Vector__XXX
+
+BO_ 162 Data_Temperature_3_Torque: 8 Inverter
+ SG_ Torque_Shudder : 48|16@1- (0.1,0) [-3276.8|3276.7] "Newton Meters" Vector__XXX
+ SG_ Temperature_Motor : 32|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_RTD5 : 16|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_RTD4 : 0|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+
+BO_ 161 Data_Temperature_2: 8 Inverter
+ SG_ Temperature_Inverter_RTD3 : 48|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_RTD2 : 32|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_RTD1 : 16|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_CB : 0|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+
+BO_ 160 Data_Temperature_1: 8 Inverter
+ SG_ Temperature_Inverter_GDB : 48|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_Module_C : 32|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_Module_B : 16|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+ SG_ Temperature_Inverter_Module_A : 0|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
+
+BO_ 5 Input_Pedals: 8 ECU
+ SG_ Brake_2 : 48|10@1+ (1,0) [0|1023] "ADC"  Dashboard
+ SG_ Brake_1 : 32|10@1+ (1,0) [0|1023] "ADC"  Dashboard
+ SG_ APPS_2 : 16|10@1+ (1,0) [0|1023] "ADC"  Dashboard
+ SG_ APPS_1 : 0|10@1+ (1,0) [0|1023] "ADC"  Dashboard
+
+BO_ 144 Input_Steering_Angle: 2 Dashboard
+
+
+
+CM_ BU_ BMS "Accumulator";
+CM_ BU_ Accelerometer "Acceleration Sensor";
+CM_ BU_ Inverter "RMS PM100 DX Inverter";
+CM_ BU_ Dashboard "Vehicle Dashboard";
+CM_ BU_ ECU "Vehicle ECU";
+CM_ BO_ 4 "Command to Enter Drive Mode";
+CM_ SG_ 4 Command_Enter_Drive "Drive Mode Enable Bit";
+CM_ BO_ 16 "Dashboard Torque Settings";
+CM_ SG_ 16 State_Regen_Config_Enabled "Regen Enable/Disable Bit";
+CM_ BO_ 1332 "Command to Update ECU Brake Ranges";
+CM_ SG_ 1332 Brake_2_Real_Min "Brake-2 Calibration Min";
+CM_ SG_ 1332 Brake_2_Real_Max "Brake-2 Calibration Max";
+CM_ SG_ 1332 Brake_1_Real_Min "Brake-1 Calibration Min";
+CM_ SG_ 1332 Brake_1_Real_Max "Brake-1 Calibration Max";
+CM_ BO_ 256 "Status of the Accumulator";
+CM_ SG_ 256 Voltage_BMS "BMS Pack Voltage";
+CM_ SG_ 256 Temperature_BMS_Max "BMS Max Cell Temperature";
+CM_ SG_ 256 State_of_Charge "BMS State of Charge";
+CM_ SG_ 256 Power_BMS "BMS Pack Power";
+CM_ SG_ 256 Current_BMS "BMS Pack Current";
+CM_ BO_ 1088 "Status of the Accumulator";
+CM_ SG_ 1088 State_of_Charge "BMS State of Charge";
+CM_ BO_ 1331 "Command to Update ECU APPS Ranges";
+CM_ SG_ 1331 APPS_2_Real_Min "APPS-2 Calibration Real Min";
+CM_ SG_ 1331 APPS_2_Real_Max "APPS-2 Calibration Real Max";
+CM_ SG_ 1331 APPS_1_Real_Min "APPS-1 Calibration Real Min";
+CM_ SG_ 1331 APPS_1_Real_Max "APPS-1 Calibration Real Max";
+CM_ BO_ 171 "Inverter Fault Message";
+CM_ SG_ 171 Error_Inverter_Run_Fault "Inverter Run Fault Code";
+CM_ SG_ 171 Error_Inverter_POST_Fault "Inverter POST Fault Code";
+CM_ BO_ 1795 "ECU Status Data";
+CM_ SG_ 1795 State_Regen_Enabled "Regen Enabled";
+CM_ SG_ 1795 State_Ready_to_Drive "Ready to Drive";
+CM_ SG_ 1795 State_High_Voltage "High Voltage Enabled";
+CM_ SG_ 1795 Plausibility_Torque "Torque Plausibility";
+CM_ SG_ 1795 Plausibility_Pedals "Pedal Plausibility";
+CM_ SG_ 1795 Plausibility_Pedal_100ms "Pedal 100ms Plausibility";
+CM_ SG_ 1795 Plausibility_Brakes_Calibration "Brake Calibration Plausibility";
+CM_ SG_ 1795 Plausibility_Brakes "Brake Value Plausibility";
+CM_ SG_ 1795 Plausibility_APPS_Calibration "APPS Calibration Plausibility";
+CM_ SG_ 1795 Plausibility_APPS_25_5 "APPS 25/5 Rule Plausibility";
+CM_ SG_ 1795 Plausibility_APPS "APPS Value Plausibility";
+CM_ BO_ 1793 "ECU Pedal Percentages";
+CM_ SG_ 1793 Brake_2_Percent "Brake-2 Percentage";
+CM_ SG_ 1793 Brake_1_Percent "Brake-1 Percentage";
+CM_ SG_ 1793 APPS_2_Percent "APPS-2 Percentage";
+CM_ SG_ 1793 APPS_1_Percent "APPS-1 Percentage";
+CM_ BO_ 192 "Command for inverter activity";
+CM_ SG_ 192 Torque_Limit "Inverter Torque Limit Command";
+CM_ SG_ 192 Speed_Mode "Inverter Speed Mode Command";
+CM_ SG_ 192 Inverter_Discharge "Inverter Discharge Command";
+CM_ SG_ 192 Inverter_Enable "Inverter Enable Command";
+CM_ SG_ 192 Inverter_Direction "Inverter Direction Command";
+CM_ SG_ 192 Speed_Target "Inverter Speed Command";
+CM_ SG_ 192 Torque_Target "Inverter Torque Command";
+CM_ BO_ 168 "Inverter Flux Information";
+CM_ SG_ 168 Current_Q_Axis "Current  of Inverter Q-Axis";
+CM_ SG_ 168 Current_D_Axis "Current of Inverter D-Axis";
+CM_ SG_ 168 Flux_Motor "Inverter Actual Flux";
+CM_ SG_ 168 Flux_Motor_Target "Inverter Target Flux";
+CM_ BO_ 167 "Inverter Voltage Information";
+CM_ SG_ 167 Voltage_Q_Axis "Inverter Q-Axis Voltage. Refers to Phase B-C when disabled";
+CM_ SG_ 167 Voltage_D_Axis "Inverter D-Axis Voltage. Refers to Phase A-B Voltage when disabled";
+CM_ SG_ 167 Voltage_Inverter_Output "Voltage of the Inverters Output";
+CM_ SG_ 167 Voltage_DC_Bus "Voltage of the Inverter DC Bus";
+CM_ BO_ 166 "Inverter Current Information";
+CM_ SG_ 166 Current_DC_Bus "Current of Inverter DC Bus";
+CM_ SG_ 166 Current_Phase_C "Current of Inverter Phase C";
+CM_ SG_ 166 Current_Phase_B "Current of Inverter Phase B";
+CM_ SG_ 166 Current_Phase_A "Current of Inverter Phase A";
+CM_ BO_ 165 "Inverter Motor Information";
+CM_ SG_ 165 Motor_Filtered_Delta_Resolver "Motor Filtered Delta Resolver Value";
+CM_ SG_ 165 Motor_Frequency "Current Frequency of the Motor";
+CM_ SG_ 165 Motor_Speed "The Angluar Velocity of the Motor";
+CM_ SG_ 165 Motor_Angle "Current Angle of the Motor";
+CM_ BO_ 162 "Inverter Temperature Message 3 & Torque Shudder";
+CM_ SG_ 162 Torque_Shudder "Motor Torque Shudder";
+CM_ SG_ 162 Temperature_Motor "Temperature of the Motor";
+CM_ SG_ 162 Temperature_Inverter_RTD5 "Temperature of RTD #5";
+CM_ SG_ 162 Temperature_Inverter_RTD4 "Temperature of RTD #4";
+CM_ BO_ 161 "Inverter Temperature Message 2";
+CM_ SG_ 161 Temperature_Inverter_RTD3 "Temperature of RTD #3";
+CM_ SG_ 161 Temperature_Inverter_RTD2 "Temperature of RTD #2";
+CM_ SG_ 161 Temperature_Inverter_RTD1 "Temperature of RTD #1";
+CM_ SG_ 161 Temperature_Inverter_CB "Temperature of the Control Board";
+CM_ BO_ 160 "Inverter Temperature Message 1";
+CM_ SG_ 160 Temperature_Inverter_GDB "Temperature of the Gate Driver Board";
+CM_ SG_ 160 Temperature_Inverter_Module_C "Temperature of IGBT Module, Phase C";
+CM_ SG_ 160 Temperature_Inverter_Module_B "Temperature of IGBT Module, Phase B";
+CM_ SG_ 160 Temperature_Inverter_Module_A "Temperature of IGBT Module, Phase A";
+CM_ BO_ 5 "Pedal Input";
+CM_ SG_ 5 Brake_2 "Brake-2 ACAN Reading";
+CM_ SG_ 5 Brake_1 "Brake-1 ADC Reading";
+CM_ SG_ 5 APPS_2 "APPS-2 ADC Reading";
+CM_ SG_ 5 APPS_1 "APPS-1 ADC Reading";
+CM_ BO_ 144 "Steering Angle";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+VAL_ 171 Error_Inverter_POST_Fault 1073741824 "Brake Shorted" 536870912 "Reserved" 268435456 "Reserved" 134217728 "Reserved" 67108864 "EEPROM Update Required" 33554432 "EEPROM Data Out of Range" 16777216 "EEPROM Checksum Invalid" 8388608 "Pre-Charge Voltage Failure" 4194304 "Pre-Charge Timeout" 2097152 "DC Bus Voltage Low" 1048576 "DC Bus Voltage High" 524288 "1.5V Sense Voltage High" 262144 "1.5V Sense Voltage Low" 131072 "2.5V Sense Voltage High" 65536 "2.5V Sense Voltage Low" 32768 "12V Sense Voltage High" 16384 "12V Sense Voltage Low" 8192 "5V Sense Voltage High" 4096 "5V Sense Voltage Low" 2048 "Gate Drive PCB Temperature High" 1024 "Gate Drive PCB Temperature Low" 512 "Control PCB Temperature High" 256 "Control PCB Temperature Low" 128 "Module Temperature High" 64 "Module Temperature Low" 32 "Current Sensor High" 16 "Current Sensor Low" 8 "Accelerator Open" 4 "Accelerator Shorted" 2 "HW Over-current Fault" 1 "Hardware Gate/Desaturation Fault" 0 "No Faults" -2147483648 "Brake Open" ;
+VAL_ 192 Inverter_Discharge 1 "Discharge Enabled" 0 "Discharge Disabled" ;
+VAL_ 192 Inverter_Enable 1 "Enabled" 0 "Disabled" ;
+VAL_ 192 Inverter_Direction 1 "Forward" 0 "Reverse" ;

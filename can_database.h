@@ -1,6 +1,10 @@
 #ifndef CAN_DATABASE_H
 #define CAN_DATABASE_H
 
+// CAN Database ---------------------------------------------------------------------------------------------------------------
+// Description: An interface for CAN bus communication. Received messages are parsed using a DBC file and stored in a
+//   relational database for random access.
+
 // Includes
 #include "database.h"
 #include "can_socket.h"
@@ -9,15 +13,16 @@
 // C++ Standard Libraries
 #include <vector>
 #include <string>
-#include <iostream>
-#include <iomanip>
 
 // POSIX Libraries
 #include <pthread.h>
-#include <string.h>
 
 class CanDatabase : public Database
 {
+    // Compilation Flags ------------------------------------------------------------------------------------------------------
+
+    #define DEBUG_MODE
+
     // Constants --------------------------------------------------------------------------------------------------------------
 
     #define SOCKET_RX_TIMEOUT_MS 1000
@@ -38,149 +43,64 @@ class CanDatabase : public Database
                                          // database entry.
     size_t messageCount;                 // Number of messages in database. Indicates size of signalIndices base array.
 
-    bool continueScan;
+    bool rxThreadControl;                // Control / status of the RX thread. If set to false, the thread will terminate.
+    bool rxThreadDebug;                  // RX thread debug control. Only works if the DEBUG_MODE flag is set in compliation
 
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
     public:
 
-    CanDatabase(std::string databaseFilePath, std::string canDeviceName) : txInterface(canDeviceName), rxInterface(canDeviceName)
-    {
-        size_t signalCount = CanDbc::parseFile(databaseFilePath, messages);
+    // Constructor
+    // - Creates a CAN Database tied to the specified device and DBC file
+    // - Creates a thread for scanning the CAN bus for incoming messages
+    CanDatabase(std::string databaseFilePath, std::string canDeviceName);
 
-        this->allocate(signalCount);
+    // Destructor
+    // - Deallocates the database memory and terminates the RX thread
+    ~CanDatabase();
 
-        messageCount = messages.size();
-        signalIndices = new size_t*[messageCount];
-        
-        for(size_t mIndex = 0; mIndex < messageCount; ++mIndex)
-        {
-            size_t sCount = messages[mIndex].signals.size();
-            signalIndices[mIndex] = new size_t[sCount];
-            
-            for(size_t sIndex = 0; sIndex < sCount; ++sIndex)
-            {
-                CanDbc::CanSignal& s = messages[mIndex].signals[sIndex];
-                if(s.typeId == ID_TYPE_INT)
-                {
-                    int data = 0;
-                    this->insert(data, s.name);
-                    signalIndices[mIndex][sIndex] = this->getIndex(s.name);
-                }
-                else if(s.typeId == ID_TYPE_UINT)
-                {
-                    unsigned int data = 0;
-                    this->insert(data, s.name);
-                    signalIndices[mIndex][sIndex] = this->getIndex(s.name);
-                }
-                else if(s.typeId == ID_TYPE_BOOL)
-                {
-                    bool data = false;
-                    this->insert(data, s.name);
-                    signalIndices[mIndex][sIndex] = this->getIndex(s.name);
-                }
-            }
-        }
+    // Assign
+    // - 
+    template<typename T>
+    void assign(T& data, std::string key);
 
-        rxInterface.setTimeout(SOCKET_RX_TIMEOUT_MS);
+    // Start RX Thread
+    // - Call to start the database's RX thread, if not already active
+    // - Will create the thread and start scanning
+    // - Does nothing if the thread is already scanning
+    void startRxThread();
 
-        continueScan = true;
-        pthread_create(&rxThread, NULL, &CanDatabase::scanRx, this);
-    }
+    // End RX Thread
+    // - Call to terminate the database's RX thread, if currently running
+    // - Will set the control flag and wait until termination
+    // - Does nothing if the thread is not running
+    void endRxThread();
 
-    ~CanDatabase()
-    {
-        std::cout << "Terminating RX thread..." << std::endl;
+    // Get RX Thread Status
+    // - Returns the state of the RX thread
+    // - Returns true if scanning, false otherwise
+    bool getRxThreadStatus() const;
 
-        // Terminate thread
-        continueScan = false;
-        pthread_join(rxThread, NULL);
+    // Set RX Thread Debug
+    // - Enable / disable RX thread debugging
+    // - See rxThreadDebug for more info
+    void setRxThreadDebug(bool state);
 
-        std::cout << "RX thread ended." << std::endl;
+    // Get RX Thread Debug
+    // - Get the state of the RX debug flag
+    // - See rxThreadDebug for more info
+    bool getRxThreadDebug() const;
 
-        // Delete signal indices
-        for(size_t mIndex = 0; mIndex < messageCount; ++mIndex)
-        {
-            delete [] signalIndices[mIndex];
-        }
-        delete [] signalIndices;
-    }
+    // Get CAN Messages
+    // - Returns a reference to the database's CAN Messages
+    // - Used for printing of CAN database messages / signals
+    const std::vector<CanDbc::CanMessage>& getMessages() const;
 
-    // TODO: This function CANNOT be thread safe
-    static void* scanRx(void* database_)
-    {
-        std::cout << "RXTHREAD: Begin." << std::endl;
-
-        CanDatabase* database = reinterpret_cast<CanDatabase*>(database_);
-
-        std::cout << "RXTHREAD: Message count = " << database->messageCount << std::endl;
-
-        unsigned int id;
-        uint64_t data;
-        unsigned int dataCount;
-
-        while(database->continueScan)
-        {
-            try
-            {
-                database->rxInterface.read_m(id, data, dataCount);
-
-                bool messageFound = false;
-
-                for(size_t mIndex = 0; mIndex < database->messageCount; ++mIndex)
-                {
-                    if(id != database->messages[mIndex].id) continue;
-                    
-                    CanDbc::CanMessage& message = database->messages[mIndex];
-
-                    size_t signalCount = message.signals.size();
-                    for(size_t sIndex = 0; sIndex < signalCount; ++sIndex)
-                    {
-                        CanDbc::CanSignal& signal = message.signals[sIndex];
-
-                        uint64_t value = (data >> signal.bitPosition) & signal.bitMask;
-
-                        if(signal.typeId == ID_TYPE_INT)
-                        {
-                            int data = *reinterpret_cast<int*>(&value);
-                            database->set(database->signalIndices[mIndex][sIndex], data);
-                        }
-                        else if(signal.typeId == ID_TYPE_UINT)
-                        {
-                            unsigned int data = *reinterpret_cast<unsigned int*>(&value);
-                            database->set(database->signalIndices[mIndex][sIndex], data);
-                        }
-                        else if(signal.typeId == ID_TYPE_BOOL)
-                        {
-                            bool data = *reinterpret_cast<bool*>(&value);
-                            database->set(database->signalIndices[mIndex][sIndex], data);
-                        }
-                    }
-
-                    messageFound = true;
-                }
-
-                if(!messageFound) std::cout << "Read unknown message, ID: " << std::hex << id << ". Ignoring...";
-            }
-            catch(const CanSocket::Timeout& exception)
-            {
-                // std::cout << "Timeout." << std::endl;
-            }
-            catch(const std::exception& exception)
-            {
-                std::cout << "RXTHREAD: " << exception.what();
-            }
-        }
-
-        std::cout << "RXTHREAD: End." << std::endl;
-
-        return NULL;
-    }
-
-    const std::vector<CanDbc::CanMessage>& getMessages() const
-    {
-        return this->messages;
-    }
+    // Scan RX
+    // - Scan for messages using the provided database's rx socket
+    // - Writes received data to the appropriate entry, ignores if unknown
+    // - Will continue to scan until the RX control is set false  
+    static void* scanRx(void* database_);
 };
 
 #endif // CAN_DATABASE_H

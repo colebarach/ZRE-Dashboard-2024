@@ -1,65 +1,53 @@
-// C Standard Libraries
-#include <cstdint>
+// Includes
+#include "can_socket.h"
 
 // C++ Standard Libraries
 #include <string>
 #include <vector>
 
+// To do:
+// - Scale factor and offset are ignored, they need to be used eventually
+// - Document DBC Keywords and line formats
+// - Message and signal arrays need reallocated when this is done parsing, otherwise memory is being wasted.
+
 // References:
 // - http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf
 
-// TODO:
-// - Document DBC Keywords
-
-namespace CanDbc
+namespace Network
 {
-    // Compilation Flags ----------------------------------------------------------------------------------------------------------
-
-    #define DEBUG_GENERAL
-
-    // #define DEBUG_PARSE_ENTRIES
-
-    // Datatype IDs ---------------------------------------------------------------------------------------------------------------
-
-    #define ID_TYPE_INT   0
-    #define ID_TYPE_UINT  1
-    #define ID_TYPE_BOOL  2
-
-    // DBC Keywords ---------------------------------------------------------------------------------------------------------------
-
-    #define DBC_KEYWORD_ECU       "BU_:"         // Network Node
-    #define DBC_KEYWORD_MESSAGE   "BO_"          // Message object
-    #define DBC_KEYWORD_SIGNAL    "SG_"          // Signal object
-    #define DBC_KEYWORD_VARIABLE  "EV_"          // Environment variable
-    #define DBC_KEYWORD_SIG_GROUP "SIG_GROUP_"   // Signal group
-    #define DBC_KEYWORD_VAL_TABLE "VAL_TABLE_"   // Value table
-    #define DBC_KEYWORD_VERSION   "VERSION"      // File version
-    #define DBC_KEYWORD_COMMENT   "CM_"          // Object comment, ignore line for now
-    #define DBC_KEYWORD_MISC      "NS_"          // TODO: Not sure, ignore for now
-    #define DBC_KEYWORD_MISC2     "BS_:"         // TODO: Not sure
-    #define DBC_KEYWORD_MISC3     "BA_DEF_"      // TODO: Not sure
-    #define DBC_KEYWORD_MISC4     "BA_DEF_DEF_"  // TODO: Not sure
-    #define DBC_KEYWORD_MISC5     "VAL_"         // TODO: Not sure
-
-    struct CanSignal
+    namespace CanDbc
     {
-        std::string  name;
-        int          typeId;
-        uint64_t     bitMask;
-        uint64_t     bitPosition;
-    };
+        // Compilation Flags --------------------------------------------------------------------------------------------------
 
-    struct CanMessage
-    {
-        std::string  name;
-        unsigned int id;
-        std::vector<CanSignal> signals;
-    };
+        #define DEBUG_GENERAL
 
-    // Parse File
-    // - Call to parse the contents of a DBC file into CAN Messages and Signals
-    // - Returns the total number of signals from the file
-    size_t parseFile(std::string filePath, std::vector<CanMessage>& messages);
+        #define DEBUG_PARSE_ENTRIES
 
-    std::ostream& operator<<(std::ostream& stream, const std::vector<CanMessage>& messages);
+        // Constants ----------------------------------------------------------------------------------------------------------
+
+        #define MAX_SIZE_SIGNAL_ARRAY  4096
+        #define MAX_SIZE_MESSAGE_ARRAY 1024
+
+        // DBC Keywords -------------------------------------------------------------------------------------------------------
+
+        #define DBC_KEYWORD_ECU       "BU_:"         // Network Node
+        #define DBC_KEYWORD_MESSAGE   "BO_"          // Message object
+        #define DBC_KEYWORD_SIGNAL    "SG_"          // Signal object
+        #define DBC_KEYWORD_VARIABLE  "EV_"          // Environment variable
+        #define DBC_KEYWORD_SIG_GROUP "SIG_GROUP_"   // Signal group
+        #define DBC_KEYWORD_VAL_TABLE "VAL_TABLE_"   // Value table
+        #define DBC_KEYWORD_VERSION   "VERSION"      // File version
+        #define DBC_KEYWORD_COMMENT   "CM_"          // Object comment
+        #define DBC_KEYWORD_MISC      "NS_"          // TODO: Not sure
+        #define DBC_KEYWORD_MISC2     "BS_:"         // TODO: Not sure
+        #define DBC_KEYWORD_MISC3     "BA_DEF_"      // TODO: Not sure
+        #define DBC_KEYWORD_MISC4     "BA_DEF_DEF_"  // TODO: Not sure
+        #define DBC_KEYWORD_MISC5     "VAL_"         // TODO: Not sure
+
+        // Parse File
+        // - Call to parse the contents of a DBC file into CAN Messages and Signals
+        // - Allocates dynamic arrays storing the new messages and signals
+        // - Updates the message and signal pointers to refer to the new arrays
+        void parseFile(std::string filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount);
+    }
 }

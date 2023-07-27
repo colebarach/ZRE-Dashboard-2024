@@ -1,6 +1,7 @@
 GCC := g++
 
-SRC :=	can_socket.cpp \
+SRC :=	posix_socket.cpp \
+		can_socket.cpp \
 		can_dbc.cpp \
     	database.cpp \
 	   	can_database.cpp

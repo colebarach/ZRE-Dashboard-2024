@@ -6,9 +6,9 @@
 
 // Function Prototypes --------------------------------------------------------------------------------------------------------
 
-void handleMenu(CanDatabase& db, CanSocket& txRxSocket);
+void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket);
 
-void handleExtendedMenu(CanDatabase& db, CanSocket& txRxSocket);
+void handleExtendedMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket);
 
 // Entrypoint -----------------------------------------------------------------------------------------------------------------
 
@@ -23,8 +23,8 @@ int main(int argc, char** argv)
     std::string deviceName = argv[1];
     std::string dbcFileName = argv[2];
 
-    CanDatabase db(dbcFileName, deviceName);
-    CanSocket txRxSocket(deviceName);
+    Network::CanDatabase db(dbcFileName, deviceName);
+    Network::CanSocket txRxSocket(deviceName.c_str());
 
     while(true)
     {
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 
 // Menus ----------------------------------------------------------------------------------------------------------------------
 
-void handleMenu(CanDatabase& db, CanSocket& txRxSocket)
+void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
 {
     char option;
     std::cout << "Select an option:"        << std::endl
@@ -63,7 +63,7 @@ void handleMenu(CanDatabase& db, CanSocket& txRxSocket)
         std::cout << "Enter the key: ";
         std::cin >> key;
 
-        int* data = db.reference<int>(key);
+        int* data = db.reference<int>(key.c_str());
         std::cout << std::dec << "Read: " << *data << std::endl;
     }
     else if(option == 'b')
@@ -72,14 +72,14 @@ void handleMenu(CanDatabase& db, CanSocket& txRxSocket)
         std::cout << "Enter the key: ";
         std::cin >> key;
 
-        bool* data = db.reference<bool>(key);
+        bool* data = db.reference<bool>(key.c_str());
         std::cout << std::dec << "Read: " << *data << std::endl;
     }
     else if(option == 's')
     {
         unsigned int id;
         uint64_t data;
-        unsigned int dataCount = 8;
+        size_t dataCount = 8;
         
         std::cout << "Enter the ID of the message (hex): ";
         std::cin >> std::hex >> id;
@@ -90,14 +90,15 @@ void handleMenu(CanDatabase& db, CanSocket& txRxSocket)
         std::cout << "Enter the length of the message (bytes): ";
         std::cin >> std::dec >> dataCount;
 
-        txRxSocket.send_m(id, data, dataCount);
+        // TODO: This cast is probably not good
+        txRxSocket.sendMessage(reinterpret_cast<unsigned char*>(&data), &dataCount, &id);
 
         std::cout << "Sent message." << std::endl;
     }
     else if(option == 'p')
     {
         std::cout << "Database Table:" << std::endl;
-        std::cout << db.getMessages();
+        db.printMessages(std::cout);
     }
     else if(option == 'n')
     {
@@ -109,10 +110,9 @@ void handleMenu(CanDatabase& db, CanSocket& txRxSocket)
     }
 }
 
-void handleExtendedMenu(CanDatabase& db, CanSocket& txRxSocket)
+void handleExtendedMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
 {
     char option;
-    std::string key;
 
     std::cout << "Select an option:"                << std::endl
               << "  t - Toggle the RX thread"       << std::endl

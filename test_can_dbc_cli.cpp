@@ -17,12 +17,15 @@ int main(int argc, char **argv)
 
     std::string dbcFile = argv[1];
     
-    std::vector<CanDbc::CanMessage> messages;
-    
-    CanDbc::parseFile(dbcFile, messages);
+    Network::CanMessage* messages;
+    Network::CanSignal*  signals;
+    size_t messageCount;
+    size_t signalCount;
+
+    Network::CanDbc::parseFile(dbcFile, &messages, &signals, &messageCount, &signalCount);
 
     std::cout << "Database Table:" << std::endl;
-    std::cout << messages << std::endl;
+    Network::CanDbc::printMessages(std::cout, messages, messageCount);
     
     return 0;
 }

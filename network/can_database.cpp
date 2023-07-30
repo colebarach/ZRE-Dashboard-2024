@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iomanip>
 
-// POSIX Libraries
+// C Standard Libraries
 #include <string.h>
 
 namespace Network

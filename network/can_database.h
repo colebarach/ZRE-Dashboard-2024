@@ -2,11 +2,19 @@
 #define CAN_DATABASE_H
 
 // CAN Database ---------------------------------------------------------------------------------------------------------------
+//
+// Author: Cole Barach
+//
 // Description: An interface for CAN bus communication. Received messages are parsed using a DBC file and stored in a
-//   relational database for random access.
-
+// relational database for random access.
+//
+// Created: 23.07.21
+// Updated: 23.07.27
+//
 // To do:
 // - Type safety is a big issue. Can possible implement runtime exceptions to prevent misuse.
+
+// Libraries ------------------------------------------------------------------------------------------------------------------
 
 // Includes
 #include "database.h"
@@ -37,18 +45,18 @@ namespace Network
 
         private:
         
-        CanSocket txInterface;
-        CanSocket rxInterface;
+        CanSocket txInterface;           // Socket for transmitting to the CAN bus.
+        CanSocket rxInterface;           // Socket for reading from the CAN bus.
 
-        pthread_t rxThread;
+        pthread_t rxThread;              // Thread for scanning the receiving socket.
 
-        CanMessage* messages;            // Message array
+        CanMessage* messages;            // Array of CAN messages
         CanSignal*  signals;             // Signal array. Parallel array to the database entry array.
-        size_t      messageCount;        // Number of messages in the message array
-        size_t      signalCount;         // Number of signals in the signal array
+        size_t      messageCount;        // Number of messages in the message array.
+        size_t      signalCount;         // Number of signals in the signal array.
 
         bool rxThreadControl;            // Control / status of the RX thread. If set to false, the thread will terminate.
-        bool rxThreadDebug;              // RX thread debug control. Only works if the DEBUG_MODE flag is set in compliation
+        bool rxThreadDebug;              // RX thread debug control. Only works if the DEBUG_MODE flag is set in compliation.
 
         // Constructor / Destructor -------------------------------------------------------------------------------------------
 
@@ -90,21 +98,13 @@ namespace Network
         // - See rxThreadDebug for more info
         bool getRxThreadDebug() const;
 
-        // Get CAN Messages
-        // - Returns a reference to the database's CAN Messages
-        // - Used for printing of CAN database messages / signals
-        const std::vector<CanMessage>& getMessages() const;
-
-        void printMessages(std::ostream& stream);
-
         // Scan RX
         // - Scan for messages using the provided database's rx socket
         // - Writes received data to the appropriate entry, ignores if unknown
         // - Will continue to scan until the RX control is set false  
         static void* scanRx(void* database_);
 
-        // Print Messages
-        static void printMessages(std::ostream& stream, CanMessage* messages, size_t messageCount);
+        void print(std::ostream& stream);
     };
 }
 

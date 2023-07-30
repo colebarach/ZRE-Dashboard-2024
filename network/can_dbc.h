@@ -1,17 +1,31 @@
+#ifndef CAN_DBC_H
+#define CAN_DBC_H
+
+// CAN DBC --------------------------------------------------------------------------------------------------------------------
+//
+// Author: Cole Barach
+//
+// Description: A group of functions relating to CAN DBC files.
+//
+// Created: 23.07.19
+// Updated: 23.07.27
+//
+// To do:
+// - Scale factor and offset are ignored, they need to be used eventually
+// - Document DBC Keywords and line formats
+// - Message and signal arrays need reallocated when this is done parsing, otherwise memory is being wasted.
+//
+// References:
+// - http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf
+
+// Libraries ------------------------------------------------------------------------------------------------------------------
+
 // Includes
 #include "can_socket.h"
 
 // C++ Standard Libraries
 #include <string>
 #include <vector>
-
-// To do:
-// - Scale factor and offset are ignored, they need to be used eventually
-// - Document DBC Keywords and line formats
-// - Message and signal arrays need reallocated when this is done parsing, otherwise memory is being wasted.
-
-// References:
-// - http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf
 
 namespace Network
 {
@@ -20,8 +34,7 @@ namespace Network
         // Compilation Flags --------------------------------------------------------------------------------------------------
 
         #define DEBUG_GENERAL
-
-        #define DEBUG_PARSE_ENTRIES
+        // #define DEBUG_ENTRY_INTERPRET
 
         // Constants ----------------------------------------------------------------------------------------------------------
 
@@ -51,3 +64,5 @@ namespace Network
         void parseFile(std::string filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount);
     }
 }
+
+#endif // CAN_DBC_H

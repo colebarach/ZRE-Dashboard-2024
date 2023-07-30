@@ -2,15 +2,20 @@
 #define CAN_SOCKET_H
 
 // CAN Socket -----------------------------------------------------------------------------------------------------------------
-
+//
+// Author: Cole Barach
+//
 // Description: An interface for CAN devices based on the Linux SocketCAN implementation.
-
+//
+// Created: 23.07.08
+// Updated: 23.07.30
+//
 // To do:
 // - The parse function needs to account for offset and scale factor. This is kinda weird, how do bools and chars get treated?
-// - Type ID will need reimplemented for parsing. Trying to allocate memory before is weird though. Not sure how to approach
-//   this yet.
 // - Consider a static size for message and signal names.
-
+// - Implement signal endianness, not sure how this works in CAN yet
+// - The reallocate message function should be moved, not sure where yet
+//
 // References:
 // - https://www.kernel.org/doc/html/latest/networking/can.html
 // - https://en.wikipedia.org/wiki/SocketCAN
@@ -25,17 +30,33 @@
 // Includes
 #include "posix_socket.h"
 
+// C Standard Libraries
+#include <stdint.h>
+
 // C++ Standard Libraries
 #include <vector>
 #include <string>
 
-// C Standard Libraries
-#include <cstdint>
-
-// Structures -----------------------------------------------------------------------------------------------------------------
+// Network Namespace ----------------------------------------------------------------------------------------------------------
 
 namespace Network
 {
+    // Compilation Flags ------------------------------------------------------------------------------------------------------
+
+    #define DEBUG_GENERAL
+    #define DEBUG_TRAFFIC
+    #define DEBUG_PARSE
+    #define DEBUG_DATATYPE_WARNING
+
+    // Constants --------------------------------------------------------------------------------------------------------------
+
+    #define ID_DATATYPE_UINT   0
+    #define ID_DATATYPE_INT    1
+    #define ID_DATATYPE_BOOL   2
+    #define ID_DATATYPE_DOUBLE 3
+
+    // Structures -------------------------------------------------------------------------------------------------------------
+
     // CAN Signal forward declaration
     struct CanSignal;
 
@@ -47,7 +68,7 @@ namespace Network
         size_t       signalIndex;            // Starting index of this message's CAN signals
         size_t       signalCount;            // Number of signals in this message
         char*        name;                   // Name of the message
-        unsigned int id;                     // Message ID
+        uint16_t     id;                     // Message ID
     };
 
     // CAN Message
@@ -57,9 +78,12 @@ namespace Network
         CanMessage*  messageArray;           // Array of CAN messages
         size_t       messageIndex;           // Index of the parent CAN message
         char*        name;                   // Name of the signal, c-string
+        int          datatypeId;             // ID of the signal datatype
         uint16_t     bitPosition;            // Bit position, position of first bit in message
         uint16_t     bitLength;              // Bit length, number of bits data occupies
         uint64_t     bitMask;                // Bitmask, (2 ^ bitLength - 1)
+        double       scaleFactor;            // 
+        double       offset;                 // 
         bool         isSigned;               // Is signed, indicates whether data is signed before scale and offset
     };
 
@@ -79,18 +103,22 @@ namespace Network
         // Public Functions ---------------------------------------------------------------------------------------------------
 
         // Send CAN Message
-        // - Call to send a CAN message
-        void sendMessage(const unsigned char* data, const size_t* dataLength, const unsigned int* id);
+        // - Call to broadcast message to the bound CAN bus
+        // - Will send the message using the provided paramaters
+        void sendMessage(const uint64_t* data, const uint8_t* dataLength, const uint16_t* id);
 
         // Read CAN Message
-        // - Call to read a CAN message
-        void readMessage(unsigned char* data, size_t* dataLength, unsigned int* id);
+        // - Call to read the next message from the bound CAN bus
+        // - Will write the message parameters to the provided variables
+        void readMessage(uint64_t* data, uint8_t* dataLength, uint16_t* id);
 
-        // Parse CAN Signal
-        // - Get the value of a CAN signal from its message data
-        // - Returns the value in an 8 byte frame
-        template<typename T>
-        static T parseSignal(uint64_t* data, CanSignal* signal);
+        // Parse Signal
+        // - Call to get the value of a signal from a CAN message's data
+        // - Returns the parsed datatype
+        static uint64_t parseUnsignedInt(const uint64_t& data, const CanSignal& signal);
+        static int64_t  parseSignedInt(const uint64_t& data, const CanSignal& signal);
+        static double   parseDouble(const uint64_t& data, const CanSignal& signal);
+        static bool     parseBool(const uint64_t& data, const CanSignal& signal);
 
         // Reallocate Messages
         // - Call to reallocate the signal and message arrays, maintaining internal references

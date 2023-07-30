@@ -2,37 +2,51 @@
 #define POSIX_SOCKET_H
 
 // POSIX Socket ---------------------------------------------------------------------------------------------------------------
-
+//
+// Author: Cole Barach
+// 
 // Description: A wrapper class for the POSIX socket network interface. This object acts as a base class from which
 //   implementation may be derived.
+// 
+// Created: 23.06.??
+// Updated: 23.07.30
+//
+// To do:
+// - This is a pretty bare-bones implementation, there is a TCP socket class that has a lot of functionality that could be
+//   moved into here, but this has to wait.
+// - Documentation is sparse. Needs more love.
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
+
+// C Standard Libraries
+#include <stddef.h>
 
 // C++ Libraries
 #include <exception>
 #include <stdexcept>
 
-// C Standard Libraries
-#include <stddef.h>
+// Network Namespace ----------------------------------------------------------------------------------------------------------
 
 namespace Network
 {
+    // Classes ----------------------------------------------------------------------------------------------------------------
+
     class PosixSocket
     {
-        // Constructor / Destructor -----------------------------------------------------------------------------------------------
+        // Constructor / Destructor -------------------------------------------------------------------------------------------
 
         public:
 
         PosixSocket();
 
-        // Public Functions -------------------------------------------------------------------------------------------------------
+        // Public Functions ---------------------------------------------------------------------------------------------------
 
         // Set Timeout Milliseconds
         // - Set the send and read function timeouts in milliseconds
         // - Use 0 ms to disable a set timeout
         void setTimeoutMs(unsigned long int timeMs);
 
-        // Exceptions -------------------------------------------------------------------------------------------------------------
+        // Exceptions ---------------------------------------------------------------------------------------------------------
         
         class ConnectionEnd : public std::exception
         {
@@ -50,14 +64,14 @@ namespace Network
             }
         };
 
-        // Protected Variables ----------------------------------------------------------------------------------------------------
+        // Protected Variables ------------------------------------------------------------------------------------------------
 
         protected:
 
         int descriptor;                      // Socket file descriptor
         int errorCode;                       // Generic error code, used to store errno in exceptions
 
-        // Protected Functions ----------------------------------------------------------------------------------------------------
+        // Protected Functions ------------------------------------------------------------------------------------------------
     };
 }
 

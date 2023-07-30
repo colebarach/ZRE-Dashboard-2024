@@ -77,10 +77,13 @@ void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
     }
     else if(option == 's')
     {
-        unsigned int id;
+        uint16_t id;
         uint64_t data;
-        size_t dataCount = 8;
+        uint8_t  dataLength;
         
+        // uint8_t cannot be used with cin. It will interpret as a char, not an int.
+        int dataLengthBuffer;
+
         std::cout << "Enter the ID of the message (hex): ";
         std::cin >> std::hex >> id;
 
@@ -88,17 +91,24 @@ void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
         std::cin >> std::hex >> data;
 
         std::cout << "Enter the length of the message (bytes): ";
-        std::cin >> std::dec >> dataCount;
+        std::cin >> std::dec >> dataLengthBuffer;
+        dataLength = static_cast<uint8_t>(dataLengthBuffer);
 
-        // TODO: This cast is probably not good
-        txRxSocket.sendMessage(reinterpret_cast<unsigned char*>(&data), &dataCount, &id);
+        if(std::cin.fail())
+        {
+            std::cin.ignore(4096, '\n'); // TODO: Replace with std::limits
+            std::cin.clear();
+            return;
+        }
+
+        txRxSocket.sendMessage(&data, &dataLength, &id);
 
         std::cout << "Sent message." << std::endl;
     }
     else if(option == 'p')
     {
         std::cout << "Database Table:" << std::endl;
-        db.printMessages(std::cout);
+        db.print(std::cout);
     }
     else if(option == 'n')
     {
@@ -107,6 +117,8 @@ void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
     else
     {
         std::cerr << "Enter a valid option." << std::endl;
+        std::cin.ignore(4096, '\n'); // TODO: Replace with std::limits
+        std::cin.clear();
     }
 }
 

@@ -21,16 +21,15 @@ namespace Network
         std::ifstream file(filePath, std::ios_base::in);
         std::string data;
 
-        // Allocate message array with default size
+        // Allocate message array
         *messages = new CanMessage[MAX_SIZE_MESSAGE_ARRAY];
         *messageCount = 0;
 
-        // Allocate signal array with default size
+        // Allocate signal array
         *signals = new CanSignal[MAX_SIZE_SIGNAL_ARRAY];
         *signalCount = 0;
 
         CanMessage* message = nullptr;
-        size_t signalIndex = 0;
 
         while(true)
         {
@@ -45,7 +44,6 @@ namespace Network
             }
             else if(data == DBC_KEYWORD_MESSAGE)
             {
-                // Add message, reallocate array if needed
                 if(*messageCount == MAX_SIZE_MESSAGE_ARRAY)
                 {
                     throw std::runtime_error("Failed to parse DBC file: The file exceeds the maximum number of messages (" + std::to_string(MAX_SIZE_MESSAGE_ARRAY) + ").");
@@ -56,12 +54,12 @@ namespace Network
                 ++(*messageCount);
 
                 message->signalArray = *signals;
-                message->signalIndex = signalIndex;
+                message->signalIndex = *signalCount;
                 message->signalCount = 0;
 
                 // Read message ID 
                 file >> message->id;
-                
+
                 // Read message name
                 file >> data;
                 message->name = new char[data.size() + 1];
@@ -69,7 +67,7 @@ namespace Network
 
                 // Ignore DLC
                 file >> data;
-                
+
                 // Ignore message sending ECU
                 file >> data;
             }
@@ -80,9 +78,14 @@ namespace Network
                     throw std::runtime_error("Failed to parse DBC file: Read a signal before reading the first message.");
                 }
 
+                if(*signalCount == MAX_SIZE_SIGNAL_ARRAY)
+                {
+                    throw std::runtime_error("Failed to parse DBC file: The file exceeds the maximum number of signals (" + std::to_string(MAX_SIZE_SIGNAL_ARRAY) + ").");
+                }
+
                 // Add signal
-                CanSignal* signal = &(*signals)[signalIndex];
-                ++signalIndex;
+                CanSignal* signal = &(*signals)[*signalCount];
+                ++(*signalCount);
                 ++message->signalCount;
 
                 signal->messageArray = (*messages);
@@ -100,20 +103,20 @@ namespace Network
                 size_t bitLenEnd   = data.find('@');               // Bit len ends at '@'
                 size_t signStart   = bitLenEnd + 1;                // Sign starts after bit len
                 size_t signEnd     = data.find('(') - 1;           // Sign ends before '(', +1 for space
-                size_t scaleStart  = signEnd + 2;                  // Scale starts after '('
-                size_t scaleEnd    = data.find(',');               // Scale ends at ','
-                size_t offsetStart = scaleEnd + 1;                 // Offset starts after ','
-                size_t offsetEnd   = data.find(')');               // Offset ends at ')'
-                size_t minStart    = offsetEnd + 3;                // Min starts 3 characters after offset
-                size_t minEnd      = data.find('|', minStart);     // Min ends with '|', second instance of this in data
-                size_t maxStart    = minEnd + 1;                   // Max starts after '|', +1 char
-                size_t maxEnd      = data.find(']');               // Max ends with ']'
-                size_t unitStart   = data.find('"')+1;             // Unit starts with '""
-                size_t unitEnd     = data.find('"', unitStart);    // Unit ends with second instance of '"'
-                size_t ecuStart    = unitEnd + 3;                  // ECU starts after unit, +3 for '"' and 2 spaces
-                size_t ecuEnd      = data.length()-1;              // ECU ends with line
+                // size_t scaleStart  = signEnd + 2;                  // Scale starts after '('
+                // size_t scaleEnd    = data.find(',');               // Scale ends at ','
+                // size_t offsetStart = scaleEnd + 1;                 // Offset starts after ','
+                // size_t offsetEnd   = data.find(')');               // Offset ends at ')'
+                // size_t minStart    = offsetEnd + 3;                // Min starts 3 characters after offset
+                // size_t minEnd      = data.find('|', minStart);     // Min ends with '|', second instance of this in data
+                // size_t maxStart    = minEnd + 1;                   // Max starts after '|', +1 char
+                // size_t maxEnd      = data.find(']');               // Max ends with ']'
+                // size_t unitStart   = data.find('"')+1;             // Unit starts with '""
+                // size_t unitEnd     = data.find('"', unitStart);    // Unit ends with second instance of '"'
+                // size_t ecuStart    = unitEnd + 3;                  // ECU starts after unit, +3 for '"' and 2 spaces
+                // size_t ecuEnd      = data.length()-1;              // ECU ends with line
 
-                #ifdef DEBUG_PARSE_ENTRIES
+                #ifdef DEBUG_ENTRY_INTERPRET
                 std::cout << "SIGNAL PARTITION: "
                 << " NAME = '"    << data.substr(nameStart,   nameEnd   - nameStart)   << "'"
                 << " BIT POS = '" << data.substr(bitPosStart, bitPosEnd - bitPosStart) << "'"
@@ -146,6 +149,20 @@ namespace Network
 
                 // Read sign ("1+" => unsigned, "1-" => signed)
                 signal->isSigned = (data.substr(signStart, signEnd - signStart) == "1-");
+
+                // TODO: FLOATS
+                if(signal->bitLength == 1)
+                {
+                    signal->datatypeId = ID_DATATYPE_BOOL;
+                }
+                else if(signal->isSigned)
+                {
+                    signal->datatypeId = ID_DATATYPE_INT;
+                }
+                else
+                {
+                    signal->datatypeId = ID_DATATYPE_UINT;
+                }
             }
             else if(data == DBC_KEYWORD_COMMENT)
             {

@@ -1,14 +1,10 @@
-GCC := g++
-
-SRC :=	posix_socket.cpp \
-		can_socket.cpp \
-		can_dbc.cpp \
-    	database.cpp \
-	   	can_database.cpp
-
-LIBS_FLAGS := -lpthread
+# To do:
+# - I'd like to have a single makefile for the whole project, but that might not be simple
 
 all: test-can-cli
 
-test-can-cli: test_can_cli.cpp $(SRC)
-	$(GCC) test_can_cli.cpp -o test-can-cli $(SRC) $(LIBS_FLAGS)
+test-can-cli: network
+	g++ testing/test_can_cli.cpp build/network.a -o build/test-can-cli -I network/
+
+network:
+	make -C network

@@ -4,20 +4,20 @@ CC_FLAGS := -Wall
 ARC := ar
 ARC_FLAGS := -rv
 
-BUILD_DIR := ../build
-OBJ_DIR := $(BUILD_DIR)/obj
+LIB_DIR := ../lib
+OBJ_DIR := ../obj
 
 SRC := $(wildcard *.cpp)
 OBJ := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
 LIB_FLAGS := -lpthread
 
-TARGET := $(BUILD_DIR)/network.a
+TARGET := $(LIB_DIR)/network.a
 
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	mkdir -p $(BUILD_DIR)
+	mkdir -p $(LIB_DIR)
 	$(ARC) $(ARC_FLAGS) $@ $^
 
 $(OBJ_DIR)/%.o: %.cpp

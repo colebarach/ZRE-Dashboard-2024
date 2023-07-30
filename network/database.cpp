@@ -139,8 +139,6 @@ namespace Network
     {
         if(index >= insertionIndex) throw std::runtime_error(std::string("Database entry set error: Index ") + std::to_string(index) + " is out of range.");
 
-        std::cout << "Setting by index: " << data << std::endl;
-
         *reinterpret_cast<T*>(entries[index].dataPtr) = data;
     }
 

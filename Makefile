@@ -1,11 +1,11 @@
 # To do:
 # - I'd like to have a single makefile for the whole project, but that might not be simple
 
-all: bin/test-can-cli
+all: bin/dash_can_cli
 
-bin/test-can-cli: lib/network.a testing/test_can_cli.cpp
+bin/dash_can_cli: lib/network.a cli/dash_can_cli.cpp
 	mkdir -p bin
-	g++ testing/test_can_cli.cpp lib/network.a -o bin/test-can-cli -I network/
+	g++ cli/dash_can_cli.cpp lib/network.a -o bin/dash-can-cli -I network/
 
 lib/network.a:
 	make -C network

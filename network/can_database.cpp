@@ -106,8 +106,6 @@ namespace Network
             {
                 database->rxInterface.readMessage(&data, &dataLength, &id);
 
-                std::cout << "Read message " << id << ". Identifying..." << std::endl;
-
                 bool messageFound = false;
 
                 for(size_t messageIndex = 0; messageIndex < database->messageCount; ++messageIndex)
@@ -116,13 +114,9 @@ namespace Network
                     
                     CanMessage& message = database->messages[messageIndex];
 
-                    std::cout << "Reading message \"" << message.name << "\"..." << std::endl;
-
                     for(size_t signalIndex = message.signalIndex; signalIndex < message.signalIndex + message.signalCount; ++signalIndex)
                     {
                         CanSignal& signal = database->signals[signalIndex];
-
-                        std::cout << "Reading signal \"" << signal.name << "\"... " << std::endl;
 
                         if(signal.datatypeId == ID_DATATYPE_UINT)
                         {

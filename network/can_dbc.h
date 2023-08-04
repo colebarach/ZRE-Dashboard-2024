@@ -33,7 +33,7 @@ namespace Network
     {
         // Compilation Flags --------------------------------------------------------------------------------------------------
 
-        #define DEBUG_GENERAL
+        // #define DEBUG_GENERAL
         // #define DEBUG_ENTRY_INTERPRET
 
         // Constants ----------------------------------------------------------------------------------------------------------

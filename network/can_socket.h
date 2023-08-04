@@ -43,10 +43,10 @@ namespace Network
 {
     // Compilation Flags ------------------------------------------------------------------------------------------------------
 
-    #define DEBUG_GENERAL
+    // #define DEBUG_GENERAL
     // #define DEBUG_TRAFFIC
     // #define DEBUG_PARSE
-    #define DEBUG_DATATYPE_WARNING
+    // #define DEBUG_DATATYPE_WARNING
 
     // Constants --------------------------------------------------------------------------------------------------------------
 

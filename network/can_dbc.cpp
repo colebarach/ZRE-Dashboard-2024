@@ -62,6 +62,10 @@ namespace Network
 
                 // Read message name
                 file >> data;
+                if(data.size() == 0)
+                {
+                    throw std::runtime_error("Failed to parse DBC file: Read empty message name.");
+                }
                 message->name = new char[data.size() + 1];
                 strcpy(message->name, data.c_str());
 
@@ -131,8 +135,13 @@ namespace Network
                 #endif
 
                 // Read name
-                signal->name = new char[nameEnd - nameStart];
-                strcpy(signal->name, data.substr(nameStart, nameEnd - nameStart).c_str());
+                std::string signalName = data.substr(nameStart, nameEnd - nameStart);
+                signal->name = new char[signalName.size() + 1];
+                if(signalName.size() == 0)
+                {
+                    throw std::runtime_error("Failed to parse DBC file: Read empty signal name.");
+                }
+                strcpy(signal->name, signalName.c_str());
 
                 // Read bit position
                 signal->bitPosition = atoi(data.substr(bitPosStart, bitPosEnd - bitPosStart).c_str());

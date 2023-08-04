@@ -10,7 +10,7 @@
 
 namespace Network
 {
-    CanDatabase::CanDatabase(std::string databaseFilePath, std::string canDeviceName) : txInterface(canDeviceName.c_str()), rxInterface(canDeviceName.c_str())
+    CanDatabase::CanDatabase(const std::string& databaseFilePath, const std::string& canDeviceName) : txInterface(canDeviceName.c_str()), rxInterface(canDeviceName.c_str())
     {
         #ifdef DEBUG_MODE
         std::cout << "Creating CAN database bound to device \"" << canDeviceName << "\" using DBC file \"" << databaseFilePath << "\"..." << std::endl;
@@ -56,6 +56,7 @@ namespace Network
 
         rxInterface.setTimeoutMs(SOCKET_RX_TIMEOUT_MS);
 
+        rxThreadControl = false;
         rxThreadDebug = false;
 
         this->startRxThread();
@@ -162,7 +163,7 @@ namespace Network
         if(this->rxThreadControl) return;
 
         this->rxThreadControl = true;
-        pthread_create(&rxThread, NULL, &CanDatabase::scanRx, this);
+        pthread_create(&rxThread, NULL, &CanDatabase::scanRx, this); // TODO: This function can fail. need to validate results
     }
 
     void CanDatabase::endRxThread()

@@ -9,7 +9,7 @@
 // relational database for random access.
 //
 // Created: 23.07.21
-// Updated: 23.07.27
+// Updated: 23.08.03
 //
 // To do:
 // - Type safety is a big issue. Can possible implement runtime exceptions to prevent misuse.
@@ -65,11 +65,13 @@ namespace Network
         // Constructor
         // - Creates a CAN Database tied to the specified device and DBC file
         // - Creates a thread for scanning the CAN bus for incoming messages
-        CanDatabase(std::string databaseFilePath, std::string canDeviceName);
+        CanDatabase(const std::string& databaseFilePath, const std::string& canDeviceName);
 
         // Destructor
         // - Deallocates the database memory and terminates the RX thread
         ~CanDatabase();
+
+        // RX Thread ----------------------------------------------------------------------------------------------------------
 
         // Start RX Thread
         // - Call to start the database's RX thread, if not already active
@@ -103,6 +105,24 @@ namespace Network
         // - Writes received data to the appropriate entry, ignores if unknown
         // - Will continue to scan until the RX control is set false  
         static void* scanRx(void* database_);
+
+        // Accessors ----------------------------------------------------------------------------------------------------------
+
+        // Get Messages
+        // - Call to get a read-only reference to the message array
+        const CanMessage* getMessages() const { return this->messages; }
+
+        // Get Signals
+        // - Call to get a read-only reference to the signal array
+        const CanSignal* getSignals() const { return this->signals; }
+
+        // Get Message Count
+        // - Call to get the number of elements in the message array
+        size_t getMessageCount() const { return this->messageCount; }
+
+        // Get Signal Count
+        // - Call to get the number of elements in the signal array
+        size_t getSignalCount() const { return this->signalCount; }
 
         void print(std::ostream& stream);
     };

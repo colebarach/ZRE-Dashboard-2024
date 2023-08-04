@@ -71,6 +71,9 @@ int main(int argc, char** argv)
 
 bool handleArguments(int argc, char** argv, std::string* deviceName, std::string* dbcFileName)
 {
+    bool deviceNameFound = false;
+    bool dbcFileNameFound = false;
+
     for(int index = 1; index < argc; ++index)
     {
         if(argv[index][0] == '-')
@@ -115,11 +118,13 @@ bool handleArguments(int argc, char** argv, std::string* deviceName, std::string
             {
                 // Device name
                 *deviceName = argv[index];
+                deviceNameFound = true;
             }
             else if(index == argc - 1)
             {
                 // DBC name
                 *dbcFileName = argv[index];
+                dbcFileNameFound = true;
             }
             else
             {
@@ -130,7 +135,10 @@ bool handleArguments(int argc, char** argv, std::string* deviceName, std::string
         }
     }
 
-    return true;
+    if(deviceNameFound && dbcFileNameFound) return true;
+
+    printFormat();
+    return false;
 }
 
 void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
@@ -221,7 +229,8 @@ void handleExtendedMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket
     std::cout << "Select an option:"                << std::endl
               << "  t - Toggle the RX thread"       << std::endl
               << "  d - Toggle RX thread debugging" << std::endl
-              << "  b - Back"                       << std::endl;
+              << "  b - Back"                       << std::endl
+              << "  c - Test CR BS"                 << std::endl;
     std::cin >> option;
 
     if(option == 'b')
@@ -253,6 +262,20 @@ void handleExtendedMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket
             db.setRxThreadDebug(true);
             std::cout << "Enabled RX thread debugging." << std::endl;
         }
+    }
+    else if(option == 'c')
+    {
+        std::cout << "abcd" << std::endl;
+        std::cout << "defg" << std::endl;
+        std::cout << "ghij" << std::endl;
+        std::cout << "jklm" << std::endl;
+
+        std::cout << "Press enter.";
+
+        char a;
+        std::cin >> a;
+
+        std::cout << "\r\b\r\b\r" << "read\nwrite" << std::endl;
     }
     else
     {

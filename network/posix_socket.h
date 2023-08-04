@@ -8,13 +8,11 @@
 // Description: A wrapper class for the POSIX socket network interface. This object acts as a base class from which
 //   implementation may be derived.
 // 
-// Created: 23.06.??
+// Created: 23.07.08
 // Updated: 23.07.30
 //
 // To do:
-// - This is a pretty bare-bones implementation, there is a TCP socket class that has a lot of functionality that could be
-//   moved into here, but this has to wait.
-// - Documentation is sparse. Needs more love.
+// - This is a pretty bare-bones implementation, more will be added with the d-gram socket implementation.
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 

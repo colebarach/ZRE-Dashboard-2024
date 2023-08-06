@@ -22,3 +22,11 @@ clean:
 rebuild:
 	make clean
 	make all
+
+create-vcan:
+	sudo ip link add dev vcan0 type vcan
+	sudo ip link set up vcan0
+
+delete-vcan:
+	sudo ip link set down vcan0
+	sudo ip link delete vcan0

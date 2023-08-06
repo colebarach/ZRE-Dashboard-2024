@@ -1,5 +1,6 @@
 // Includes
-#include "mainwindow.h"
+#include "main_window.h"
+#include "can_database.h"
 
 // QT Libraries
 #include <QApplication>
@@ -9,15 +10,12 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    QApplication application(argc, argv);
+    
+    Network::CanDatabase database(argv[2], argv[1]);
 
-    std::cout << "You have entered " << argc << " arguments:" << std::endl;
+    MainWindow window(&database);
+    window.show();
 
-    for (int i = 0; i < argc; i++) {
-        std::cout << argv[i] << std::endl;
-    }
-
-    return a.exec();
+    return application.exec();
 }

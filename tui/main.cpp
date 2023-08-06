@@ -66,136 +66,143 @@ int main(int argc, char** argv)
     const Network::CanMessage* messages     = database.getMessages();
     size_t                     messageCount = database.getMessageCount();
 
-    mvaddstr(0, 0,   "  Signal Name");
-    mvaddstr(0, 38,  "| Value");
-    mvaddstr(0, 51,  "| Bit Mask");
-    mvaddstr(0, 62,  "| Bit Position");
-    mvaddstr(0, 78,  "| Bit Length");
-    mvaddstr(0, 91, "| Type");
-
-    int line = 1;
-
-    for(size_t mIndex = 0; mIndex < messageCount; ++mIndex)
+    for(int index = 0; index < messageCount + database.getSignalCount(); ++index)
     {
-        const Network::CanMessage& m = messages[mIndex];
-
-        mvaddstr(line, 0, m.name);
-        ++line;
-
-        for(size_t sIndex = m.signalIndex; sIndex <  m.signalCount + m.signalIndex; ++sIndex)
-        {
-            const Network::CanSignal& s = m.signalArray[sIndex];
-
-            char data[64];
-
-            mvaddstr(line, 0, s.name);
-
-            if(s.datatypeId == ID_DATATYPE_UINT)
-            {
-                sprintf(data, "%d", database.get<unsigned int>(s.name));
-                mvaddstr(line, 40, data);
-            }
-            else if(s.datatypeId == ID_DATATYPE_INT)
-            {
-                sprintf(data, "%d", database.get<int>(s.name));
-                mvaddstr(line, 40, data);
-            }
-            else if(s.datatypeId == ID_DATATYPE_BOOL)
-            {
-                sprintf(data, "%d", database.get<bool>(s.name));
-                mvaddstr(line, 40, data);
-            }
-            else if(s.datatypeId == ID_DATATYPE_DOUBLE)
-            {
-                sprintf(data, "%d", database.get<double>(s.name));
-                mvaddstr(line, 40, data);
-            }
-            else
-            {
-                mvaddstr(line, 40, "--");
-            }
-            
-            sprintf(data, "%X", s.bitMask);
-            mvaddstr(line, 53, data);
-            
-            sprintf(data, "%X", s.bitPosition);
-            mvaddstr(line, 64, data);
-            
-            sprintf(data, "%d", s.bitLength);
-            mvaddstr(line, 80, data);
-            
-            if(s.datatypeId == ID_DATATYPE_UINT)
-            {
-                mvaddstr(line, 93, "UINT");
-            }
-            else if(s.datatypeId == ID_DATATYPE_INT)
-            {
-                mvaddstr(line, 93, "INT");
-            }
-            else if(s.datatypeId == ID_DATATYPE_BOOL)
-            {
-                mvaddstr(line, 93, "BOOL");
-            }
-            else if(s.datatypeId == ID_DATATYPE_DOUBLE)
-            {
-                mvaddstr(line, 93, "DOUBLE");
-            }
-            else
-            {
-                mvaddstr(line, 93, "--");
-            }
-            
-            ++line;
-        }
+        printw("%d\n", index);
     }
 
-	while(true)
-	{
-        line = 1;
+    // mvaddstr(0, 0,   "  Signal Name");
+    // mvaddstr(0, 38,  "| Value");
+    // mvaddstr(0, 51,  "| Bit Mask");
+    // mvaddstr(0, 62,  "| Bit Position");
+    // mvaddstr(0, 78,  "| Bit Length");
+    // mvaddstr(0, 91, "| Type");
 
-        for(size_t mIndex = 0; mIndex < messageCount; ++mIndex)
-        {
-            const Network::CanMessage& m = messages[mIndex];
+    // int line = 1;
 
-            ++line;
+    // for(size_t mIndex = 0; mIndex < messageCount; ++mIndex)
+    // {
+    //     const Network::CanMessage& m = messages[mIndex];
 
-            for(size_t sIndex = m.signalIndex; sIndex <  m.signalCount + m.signalIndex; ++sIndex)
-            {
-                const Network::CanSignal& s = m.signalArray[sIndex];
+    //     mvaddstr(line, 0, m.name);
+    //     ++line;
 
-                char data[64];
+    //     for(size_t sIndex = m.signalIndex; sIndex <  m.signalCount + m.signalIndex; ++sIndex)
+    //     {
+    //         const Network::CanSignal& s = m.signalArray[sIndex];
 
-                if(s.datatypeId == ID_DATATYPE_UINT)
-                {
-                    sprintf(data, "%d", database.get<unsigned int>(s.name));
-                    mvaddstr(line, 40, data);
-                }
-                else if(s.datatypeId == ID_DATATYPE_INT)
-                {
-                    sprintf(data, "%d", database.get<int>(s.name));
-                    mvaddstr(line, 40, data);
-                }
-                else if(s.datatypeId == ID_DATATYPE_BOOL)
-                {
-                    sprintf(data, "%d", database.get<bool>(s.name));
-                    mvaddstr(line, 40, data);
-                }
-                else if(s.datatypeId == ID_DATATYPE_DOUBLE)
-                {
-                    sprintf(data, "%d", database.get<double>(s.name));
-                    mvaddstr(line, 40, data);
-                }
-                else
-                {
-                    mvaddstr(line, 40, "--");
-                }
+    //         char data[64];
+
+    //         mvaddstr(line, 0, s.name);
+
+    //         if(s.datatypeId == ID_DATATYPE_UINT)
+    //         {
+    //             sprintf(data, "%d", database.get<unsigned int>(s.name));
+    //             mvaddstr(line, 40, data);
+    //         }
+    //         else if(s.datatypeId == ID_DATATYPE_INT)
+    //         {
+    //             sprintf(data, "%d", database.get<int>(s.name));
+    //             mvaddstr(line, 40, data);
+    //         }
+    //         else if(s.datatypeId == ID_DATATYPE_BOOL)
+    //         {
+    //             sprintf(data, "%d", database.get<bool>(s.name));
+    //             mvaddstr(line, 40, data);
+    //         }
+    //         else if(s.datatypeId == ID_DATATYPE_DOUBLE)
+    //         {
+    //             sprintf(data, "%d", database.get<double>(s.name));
+    //             mvaddstr(line, 40, data);
+    //         }
+    //         else
+    //         {
+    //             mvaddstr(line, 40, "--");
+    //         }
+            
+    //         sprintf(data, "%X", s.bitMask);
+    //         mvaddstr(line, 53, data);
+            
+    //         sprintf(data, "%X", s.bitPosition);
+    //         mvaddstr(line, 64, data);
+            
+    //         sprintf(data, "%d", s.bitLength);
+    //         mvaddstr(line, 80, data);
+            
+    //         if(s.datatypeId == ID_DATATYPE_UINT)
+    //         {
+    //             mvaddstr(line, 93, "UINT");
+    //         }
+    //         else if(s.datatypeId == ID_DATATYPE_INT)
+    //         {
+    //             mvaddstr(line, 93, "INT");
+    //         }
+    //         else if(s.datatypeId == ID_DATATYPE_BOOL)
+    //         {
+    //             mvaddstr(line, 93, "BOOL");
+    //         }
+    //         else if(s.datatypeId == ID_DATATYPE_DOUBLE)
+    //         {
+    //             mvaddstr(line, 93, "DOUBLE");
+    //         }
+    //         else
+    //         {
+    //             mvaddstr(line, 93, "--");
+    //         }
+            
+    //         ++line;
+    //     }
+    // }
+
+	// while(true)
+	// {
+    //     line = 1;
+
+    //     for(size_t mIndex = 0; mIndex < messageCount; ++mIndex)
+    //     {
+    //         const Network::CanMessage& m = messages[mIndex];
+
+    //         ++line;
+
+    //         for(size_t sIndex = m.signalIndex; sIndex <  m.signalCount + m.signalIndex; ++sIndex)
+    //         {
+    //             const Network::CanSignal& s = m.signalArray[sIndex];
+
+    //             char data[64];
+
+    //             if(s.datatypeId == ID_DATATYPE_UINT)
+    //             {
+    //                 sprintf(data, "%d", database.get<unsigned int>(s.name));
+    //                 mvaddstr(line, 40, data);
+    //             }
+    //             else if(s.datatypeId == ID_DATATYPE_INT)
+    //             {
+    //                 sprintf(data, "%d", database.get<int>(s.name));
+    //                 mvaddstr(line, 40, data);
+    //             }
+    //             else if(s.datatypeId == ID_DATATYPE_BOOL)
+    //             {
+    //                 sprintf(data, "%d", database.get<bool>(s.name));
+    //                 mvaddstr(line, 40, data);
+    //             }
+    //             else if(s.datatypeId == ID_DATATYPE_DOUBLE)
+    //             {
+    //                 sprintf(data, "%d", database.get<double>(s.name));
+    //                 mvaddstr(line, 40, data);
+    //             }
+    //             else
+    //             {
+    //                 mvaddstr(line, 40, "--");
+    //             }
                 
-                ++line;
-            }
-        }
+    //             ++line;
+    //         }
+    //     }
 
-		refresh();
-	}
+	// 	refresh();
+	// }
+
+    while(true) refresh();
 
     return 1;
 }

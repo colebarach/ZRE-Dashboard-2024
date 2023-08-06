@@ -3,10 +3,16 @@
 
 // Main Window ----------------------------------------------------------------------------------------------------------------
 //
-// Description: The window of the dash application.
+// Description: The main window of the dash application. Instancing this will open a new window bound to the speficied CAN
+//   database. This window will display specific entries of the database as they update. For a list of the used entries, see
+//   below.
 //
 // Created: 23.08.06
 // Updated: 23.08.06
+//
+// Required Database Entries:
+// - APPS_1_Percent (integer)
+// - Brake_1_Percent (integer)
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 

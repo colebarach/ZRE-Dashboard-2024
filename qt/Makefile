@@ -1,5 +1,6 @@
 all: dash-qt
 
 dash-qt:
-	cd ../qt-build && qmake ../qt/dash_qt.pro
-	make -C ../qt-build
+	mkdir -p ../qt_build
+	cd ../qt_build && qmake ../qt/dash_qt.pro
+	make -C ../qt_build

@@ -127,11 +127,11 @@ namespace Network
     }
 
     template<typename T>
-    void Database::get(size_t index, T& data) const
+    T Database::get(size_t index) const
     {
         if(index >= insertionIndex) throw std::runtime_error(std::string("Database entry get error: Index ") + std::to_string(index) + " is out of range.");
 
-        data = *reinterpret_cast<T*>(entries[index].dataPtr);
+        return *reinterpret_cast<T*>(entries[index].dataPtr);
     }
 
     template<typename T>
@@ -147,18 +147,18 @@ namespace Network
     // This is done so that the database can only be used for known datatypes
 
     // Integer (Size >= 2 Bytes)
-    template int* Database::reference<int>(const char*) const;
+    template int* Database::reference(const char*) const;
     template void Database::insert(const int&, const char*);
     template void Database::set(size_t, const int&);
-    template void Database::get(size_t, int&) const;
+    template int  Database::get(size_t) const;
     template void Database::set(const char*, const int&);
-    template int Database::get<int>(const char*) const;
+    template int  Database::get(const char*) const;
 
     // Unsigned Integer (Size >= 2 Bytes)
     template unsigned int* Database::reference<unsigned int>(const char*) const;
     template void Database::insert(const unsigned int&, const char*);
     template void Database::set(size_t, const unsigned int&);
-    template void Database::get(size_t, unsigned int&) const;
+    template unsigned int Database::get(size_t) const;
     template void Database::set(const char*, const unsigned int&);
     template unsigned int Database::get<unsigned int>(const char*) const;
 
@@ -166,7 +166,7 @@ namespace Network
     template long int* Database::reference<long int>(const char*) const;
     template void Database::insert(const long int&, const char*);
     template void Database::set(size_t, const long int&);
-    template void Database::get(size_t, long int&) const;
+    template long int Database::get(size_t) const;
     template void Database::set(const char*, const long int&);
     template long int Database::get<long int>(const char*) const;
 
@@ -174,7 +174,7 @@ namespace Network
     template unsigned long int* Database::reference<unsigned long int>(const char*) const;
     template void Database::insert(const unsigned long int&, const char*);
     template void Database::set(size_t, const unsigned long int&);
-    template void Database::get(size_t, unsigned long int&) const;
+    template unsigned long int Database::get(size_t) const;
     template void Database::set(const char*, const unsigned long int&);
     template unsigned long int Database::get<unsigned long int>(const char*) const;
 
@@ -182,19 +182,19 @@ namespace Network
     template long long int* Database::reference<long long int>(const char*) const;
     template void Database::insert(const long long int&, const char*);
     template void Database::set(size_t, const long long int&);
-    template void Database::get(size_t, long long int&) const;
+    template long long int Database::get(size_t) const;
 
     // Unsigned Long Long Integer (Size >= 8 Bytes)
     template unsigned long long int* Database::reference<unsigned long long int>(const char*) const;
     template void Database::insert(const unsigned long long int&, const char*);
     template void Database::set(size_t, const unsigned long long int&);
-    template void Database::get(size_t, unsigned long long int&) const;
+    template unsigned long long int Database::get(size_t) const;
 
     // Boolean (Size >= 1 Bit)
     template bool* Database::reference<bool>(const char*) const;
     template void Database::insert(const bool&, const char*);
     template void Database::set(size_t, const bool&);
-    template void Database::get(size_t, bool&) const;
+    template bool Database::get(size_t) const;
     template void Database::set(const char*, const bool&);
     template bool Database::get<bool>(const char*) const;
 
@@ -202,7 +202,7 @@ namespace Network
     template char* Database::reference<char>(const char*) const;
     template void Database::insert(const char&, const char*);
     template void Database::set(size_t, const char&);
-    template void Database::get(size_t, char&) const;
+    template char Database::get(size_t) const;
     template void Database::set(const char*, const char&);
     template char Database::get<char>(const char*) const;
 
@@ -210,7 +210,7 @@ namespace Network
     template unsigned char* Database::reference<unsigned char>(const char*) const;
     template void Database::insert(const unsigned char&, const char*);
     template void Database::set(size_t, const unsigned char&);
-    template void Database::get(size_t, unsigned char&) const;
+    template unsigned char Database::get(size_t) const;
     template void Database::set(const char*, const unsigned char&);
     template unsigned char Database::get<unsigned char>(const char*) const;
 
@@ -218,7 +218,7 @@ namespace Network
     template float* Database::reference<float>(const char*) const;
     template void Database::insert(const float&, const char*);
     template void Database::set(size_t, const float&);
-    template void Database::get(size_t, float&) const;
+    template float Database::get(size_t) const;
     template void Database::set(const char*, const float&);
     template float Database::get<float>(const char*) const;
 
@@ -226,7 +226,7 @@ namespace Network
     template double* Database::reference<double>(const char*) const;
     template void Database::insert(const double&, const char*);
     template void Database::set(size_t, const double&);
-    template void Database::get(size_t, double&) const;
+    template double Database::get(size_t) const;
     template void Database::set(const char*, const double&);
     template double Database::get<double>(const char*) const;
 }

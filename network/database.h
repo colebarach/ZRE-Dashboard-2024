@@ -121,7 +121,7 @@ namespace Network
         // Get Value
         // - Use to get the value of an entry using its index
         template<typename T>
-        void get(size_t index, T& data) const;
+        T get(size_t index) const;
 
         // Set Value
         // - Use to set the value of an entry using its index

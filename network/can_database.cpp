@@ -12,13 +12,13 @@ namespace Network
 {
     CanDatabase::CanDatabase(const std::string& databaseFilePath, const std::string& canDeviceName) : txInterface(canDeviceName.c_str()), rxInterface(canDeviceName.c_str())
     {
-        #ifdef DEBUG_MODE
+        #ifdef DEBUG_GENERAL
         std::cout << "Creating CAN database bound to device \"" << canDeviceName << "\" using DBC file \"" << databaseFilePath << "\"..." << std::endl;
         #endif
 
         CanDbc::parseFile(databaseFilePath, &messages, &signals, &messageCount, &signalCount);
 
-        #ifdef DEBUG_MODE
+        #ifdef DEBUG_GENERAL
         std::cout << "Read DBC file. Allocating " << signalCount << " entries... " << std::endl;
         #endif
 
@@ -85,9 +85,54 @@ namespace Network
         delete [] signals;
     }
 
+    template<typename T>
+    void CanDatabase::send(const char* key, const T& value)
+    {
+        #ifdef DEBUG_TRAFFIC
+        std::cout << "Sending signal \"" << key << "\": " << value << std::endl;
+        #endif
+
+        // Identify the parent message
+        size_t targetIndex = find(key);
+        CanMessage& message = messages[signals[targetIndex].messageIndex];
+
+        // Update the database
+        set(targetIndex, value);
+
+        // Encode the message
+        uint64_t messageData = 0;
+        for(size_t index = message.signalIndex; index < message.signalIndex + message.signalCount; ++index)
+        {
+            CanSignal& signal = signals[index];
+
+            switch(signal.datatypeId)
+            {
+                case ID_DATATYPE_UINT:
+                    messageData |= CanSocket::encodeUnsignedInt(get<unsigned int>(index), signal);
+                    break;
+                case ID_DATATYPE_INT:
+                    messageData |= CanSocket::encodeSignedInt(get<int>(index), signal);
+                    break;
+                case ID_DATATYPE_DOUBLE:
+                    messageData |= CanSocket::encodeDouble(get<double>(index), signal);
+                    break;
+                case ID_DATATYPE_BOOL:
+                    messageData |= CanSocket::encodeBool(get<bool>(index), signal);
+                    break;
+                default:
+                    throw std::runtime_error(std::string("Failed to send database message: The signal \"") + signal.name + "\" has an unknown datatype \"" + std::to_string(signal.datatypeId) + "\"");
+                    break;
+            }
+        }
+
+        // Send the message
+        uint8_t dataLength = 8; // TODO: Hard coded DLC of 8b
+        txInterface.sendMessage(&messageData, &dataLength, &message.id);
+    }
+
     void* CanDatabase::scanRx(void* database_)
     {
-        #ifdef DEBUG_MODE
+        #ifdef DEBUG_GENERAL
         std::cout << "Beginning RX thread..." << std::endl;
         #endif
         
@@ -99,7 +144,7 @@ namespace Network
 
         while(database->rxThreadControl)
         {
-            #ifdef DEBUG_MODE
+            #ifdef DEBUG_GENERAL
             if(database->rxThreadDebug) std::cout << "RX thread scanning..." << std::endl;
             #endif
             
@@ -144,7 +189,7 @@ namespace Network
                     messageFound = true;
                 }
 
-                #ifdef DEBUG_MODE
+                #ifdef DEBUG_GENERAL
                 if(!messageFound && database->rxThreadDebug) std::cout << "Received unknown message, ID: " << std::hex << id << ". Ignoring..." << std::endl;
                 #endif
             }
@@ -213,26 +258,22 @@ namespace Network
 
                 if(s.datatypeId == ID_DATATYPE_UINT)
                 {
-                    unsigned int data;
-                    this->get(sIndex, data);
+                    unsigned int data = get<unsigned int>(sIndex);
                     stream << " | " << std::setw(10) << std::dec << data;
                 }
                 else if(s.datatypeId == ID_DATATYPE_INT)
                 {
-                    int data;
-                    this->get(sIndex, data);
+                    int data = get<int>(sIndex);
                     stream << " | " << std::setw(10) << std::dec << data;
                 }
                 else if(s.datatypeId == ID_DATATYPE_BOOL)
                 {
-                    bool data;
-                    this->get(sIndex, data);
+                    bool data = get<bool>(sIndex);
                     stream << " | " << std::setw(10) << std::dec << data;
                 }
                 else if(s.datatypeId == ID_DATATYPE_DOUBLE)
                 {
-                    double data;
-                    this->get(sIndex, data);
+                    double data = get<double>(sIndex);
                     stream << " | " << std::setw(10) << std::dec << data;
                 }
                 else
@@ -249,4 +290,11 @@ namespace Network
             stream << std::endl;
         }
     }
+
+    // Template Forward Declarations ------------------------------------------------------------------------------------------
+
+    template void CanDatabase::send(const char* key, const int& value);
+    template void CanDatabase::send(const char* key, const unsigned int& value);
+    template void CanDatabase::send(const char* key, const bool& value);
+    template void CanDatabase::send(const char* key, const double& value);
 }

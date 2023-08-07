@@ -9,7 +9,7 @@
 // relational database for random access.
 //
 // Created: 23.07.21
-// Updated: 23.08.03
+// Updated: 23.08.07
 //
 // To do:
 // - Type safety is a big issue. Can possible implement runtime exceptions to prevent misuse.
@@ -35,7 +35,8 @@ namespace Network
     {
         // Compilation Flags --------------------------------------------------------------------------------------------------
 
-        #define DEBUG_MODE
+        #define DEBUG_GENERAL
+        #define DEBUG_TRAFFIC
 
         // Constants ----------------------------------------------------------------------------------------------------------
 
@@ -70,6 +71,13 @@ namespace Network
         // Destructor
         // - Deallocates the database memory and terminates the RX thread
         ~CanDatabase();
+
+        // TX -----------------------------------------------------------------------------------------------------------------
+
+        // Send Value
+        // - Call to updated a value in the database and transmit its associated message
+        template<typename T>
+        void send(const char* key, const T& value);
 
         // RX Thread ----------------------------------------------------------------------------------------------------------
 

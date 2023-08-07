@@ -15,6 +15,7 @@
 // - Consider a static size for message and signal names.
 // - Implement signal endianness, not sure how this works in CAN yet
 // - The reallocate message function should be moved, not sure where yet
+// - Encode and decode make more sense than parse, minor issue though
 //
 // References:
 // - https://www.kernel.org/doc/html/latest/networking/can.html
@@ -43,10 +44,10 @@ namespace Network
 {
     // Compilation Flags ------------------------------------------------------------------------------------------------------
 
-    // #define DEBUG_GENERAL
+    #define DEBUG_GENERAL
     // #define DEBUG_TRAFFIC
     // #define DEBUG_PARSE
-    // #define DEBUG_DATATYPE_WARNING
+    #define DEBUG_DATATYPE_WARNING
 
     // Constants --------------------------------------------------------------------------------------------------------------
 
@@ -119,6 +120,14 @@ namespace Network
         static int64_t  parseSignedInt(const uint64_t& data, const CanSignal& signal);
         static double   parseDouble(const uint64_t& data, const CanSignal& signal);
         static bool     parseBool(const uint64_t& data, const CanSignal& signal);
+
+        // Encode Signal
+        // - Call to get the message data encoding the given signal value
+        // - Returns the bitfield of the given signal, (all other bits are 0)
+        static uint64_t encodeUnsignedInt(const uint64_t& data, const CanSignal& signal);
+        static uint64_t encodeSignedInt(const int64_t& data, const CanSignal& signal);
+        static uint64_t encodeDouble(const double& data, const CanSignal& signal);
+        static uint64_t encodeBool(const bool& data, const CanSignal& signal);
 
         // Reallocate Messages
         // - Call to reallocate the signal and message arrays, maintaining internal references

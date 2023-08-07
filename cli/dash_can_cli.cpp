@@ -5,7 +5,7 @@
 // Description: A command-line tool for developing and testing the dashboard libraries.
 //
 // Created: 23.07.08
-// Updated: 23.07.30
+// Updated: 23.08.07
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -49,14 +49,14 @@ int main(int argc, char** argv)
     bool isValid = handleArguments(argc, argv, &deviceName, &dbcFileName);
     if(!isValid) return 0;
 
-    Network::CanDatabase db(dbcFileName, deviceName);
-    Network::CanSocket txRxSocket(deviceName.c_str());
+    Network::CanDatabase database(dbcFileName, deviceName);
+    Network::CanSocket   rawSocket(deviceName.c_str());
 
     while(true)
     {
         try
         {
-            handleMenu(db, txRxSocket);
+            handleMenu(database, rawSocket);
         }
         catch(const std::exception& exception)
         {
@@ -141,21 +141,32 @@ bool handleArguments(int argc, char** argv, std::string* deviceName, std::string
     return false;
 }
 
-void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
+void handleMenu(Network::CanDatabase& database, Network::CanSocket& rawSocket)
 {
     char option;
-    std::cout << "Select an option:"        << std::endl
-              << "  i - Read an integer"    << std::endl
-              << "  b - Read a bool"        << std::endl
-              << "  s - Send a message"     << std::endl
-              << "  p - Print the database" << std::endl
-              << "  n - Next menu"          << std::endl
-              << "  q - Quit"               << std::endl;
+    std::cout << "Select an option:"              << std::endl
+              << "  u - Read an unsigned integer" << std::endl
+              << "  i - Read an integer"          << std::endl
+              << "  b - Read a bool"              << std::endl
+              << "  n - Send an unsigned integer" << std::endl
+              << "  j - Send an integer"          << std::endl
+              << "  l - Send a bool"              << std::endl
+              << "  p - Print the database"       << std::endl
+              << "  n - Next menu"                << std::endl
+              << "  q - Quit"                     << std::endl;
     std::cin >> option;
 
     if(option == 'q')
     {
         exit(0);
+    }
+    else if(option == 'u')
+    {
+        std::string key;
+        std::cout << "Enter the key: ";
+        std::cin >> key;
+
+        std::cout << std::dec << "Read: " << database.get<unsigned int>(key.c_str()) << std::endl;
     }
     else if(option == 'i')
     {
@@ -163,8 +174,7 @@ void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
         std::cout << "Enter the key: ";
         std::cin >> key;
 
-        int* data = db.reference<int>(key.c_str());
-        std::cout << std::dec << "Read: " << *data << std::endl;
+        std::cout << std::dec << "Read: " << database.get<int>(key.c_str()) << std::endl;
     }
     else if(option == 'b')
     {
@@ -172,8 +182,80 @@ void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
         std::cout << "Enter the key: ";
         std::cin >> key;
 
-        bool* data = db.reference<bool>(key.c_str());
-        std::cout << std::dec << "Read: " << *data << std::endl;
+        std::cout << std::dec << "Read: " << database.get<bool>(key.c_str()) << std::endl;
+    }
+    else if(option == 'n')
+    {
+        std::string key;
+        std::cout << "Enter the key: ";
+        std::cin >> key;
+        unsigned int data;
+        std::cout << "Enter the value: ";
+        std::cin >> data;
+
+        database.send(key.c_str(), data);
+        std::cout << "Sent." << std::endl;
+    }
+    else if(option == 'j')
+    {
+        std::string key;
+        std::cout << "Enter the key: ";
+        std::cin >> key;
+        int data;
+        std::cout << "Enter the value: ";
+        std::cin >> data;
+
+        database.send(key.c_str(), data);
+        std::cout << "Sent." << std::endl;
+    }
+    else if(option == 'l')
+    {
+        std::string key;
+        std::cout << "Enter the key: ";
+        std::cin >> key;
+        bool data;
+        std::cout << "Enter the value: ";
+        std::cin >> data;
+
+        database.send(key.c_str(), data);
+        std::cout << "Sent." << std::endl;
+    }
+    else if(option == 'p')
+    {
+        std::cout << "Database Table:" << std::endl;
+        database.print(std::cout);
+    }
+    else if(option == 'n')
+    {
+        handleExtendedMenu(database, rawSocket);
+    }
+    else
+    {
+        std::cerr << "Enter a valid option." << std::endl;
+        std::cin.ignore(4096, '\n'); // TODO: Replace with std::limits
+        std::cin.clear();
+    }
+}
+
+void handleExtendedMenu(Network::CanDatabase& database, Network::CanSocket& rawSocket)
+{
+    char option;
+
+    std::cout << "Select an option:"                << std::endl
+              << "  m - Read a message"             << std::endl
+              << "  s - Send a message"             << std::endl
+              << "  t - Toggle the RX thread"       << std::endl
+              << "  d - Toggle RX thread debugging" << std::endl
+              << "  b - Back"                       << std::endl;
+    std::cin >> option;
+
+    if(option == 'b')
+    {
+        return;
+    }
+    else if(option == 'm')
+    {
+        std::cout << "TODO" << std::endl;
     }
     else if(option == 's')
     {
@@ -182,7 +264,7 @@ void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
         uint8_t  dataLength;
         
         // uint8_t cannot be used with cin. It will interpret as a char, not an int.
-        int dataLengthBuffer;
+        unsigned int dataLengthBuffer;
 
         std::cout << "Enter the ID of the message (hex): ";
         std::cin >> std::hex >> id;
@@ -201,81 +283,35 @@ void handleMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
             return;
         }
 
-        txRxSocket.sendMessage(&data, &dataLength, &id);
+        rawSocket.sendMessage(&data, &dataLength, &id);
 
         std::cout << "Sent message." << std::endl;
     }
-    else if(option == 'p')
-    {
-        std::cout << "Database Table:" << std::endl;
-        db.print(std::cout);
-    }
-    else if(option == 'n')
-    {
-        handleExtendedMenu(db, txRxSocket);
-    }
-    else
-    {
-        std::cerr << "Enter a valid option." << std::endl;
-        std::cin.ignore(4096, '\n'); // TODO: Replace with std::limits
-        std::cin.clear();
-    }
-}
-
-void handleExtendedMenu(Network::CanDatabase& db, Network::CanSocket& txRxSocket)
-{
-    char option;
-
-    std::cout << "Select an option:"                << std::endl
-              << "  t - Toggle the RX thread"       << std::endl
-              << "  d - Toggle RX thread debugging" << std::endl
-              << "  b - Back"                       << std::endl
-              << "  c - Test CR BS"                 << std::endl;
-    std::cin >> option;
-
-    if(option == 'b')
-    {
-        return;
-    }
     else if(option == 't')
     {
-        if(db.getRxThreadStatus())
+        if(database.getRxThreadStatus())
         {
-            db.endRxThread();
+            database.endRxThread();
             std::cout << "Ended RX thread." << std::endl;
         }
         else
         {
-            db.startRxThread();
+            database.startRxThread();
             std::cout << "Started RX thread." << std::endl;
         }
     }
     else if(option == 'd')
     {
-        if(db.getRxThreadDebug())
+        if(database.getRxThreadDebug())
         {
-            db.setRxThreadDebug(false);
+            database.setRxThreadDebug(false);
             std::cout << "Disabled RX thread debugging." << std::endl;
         }
         else
         {
-            db.setRxThreadDebug(true);
+            database.setRxThreadDebug(true);
             std::cout << "Enabled RX thread debugging." << std::endl;
         }
-    }
-    else if(option == 'c')
-    {
-        std::cout << "abcd" << std::endl;
-        std::cout << "defg" << std::endl;
-        std::cout << "ghij" << std::endl;
-        std::cout << "jklm" << std::endl;
-
-        std::cout << "Press enter.";
-
-        char a;
-        std::cin >> a;
-
-        std::cout << "\r\b\r\b\r" << "read\nwrite" << std::endl;
     }
     else
     {

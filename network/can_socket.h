@@ -8,7 +8,7 @@
 // Description: An interface for CAN devices based on the Linux SocketCAN implementation.
 //
 // Created: 23.07.08
-// Updated: 23.07.30
+// Updated: 23.08.07
 //
 // To do:
 // - The parse function needs to account for offset and scale factor. This is kinda weird, how do bools and chars get treated?

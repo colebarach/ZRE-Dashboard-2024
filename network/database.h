@@ -6,7 +6,7 @@
 // Author: Cole Barach
 //
 // Created: 23.07.12
-// Updated: 23.07.28
+// Updated: 23.08.07
 //
 //   A relational database for primative datatypes. Entries are stored as a key/value pair, similar to the standard map. The
 //   difference between this and the standard map is that entries can be any primate datatype. To access a value, the reference

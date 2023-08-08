@@ -455,7 +455,7 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="main">
+  <widget class="QWidget" name="mainLayout">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
      <number>0</number>
@@ -475,13 +475,76 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="frameViews">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
+      <widget class="QWidget" name="viewMenu">
+       <property name="font">
+        <font>
+         <family>ExcludedItalic</family>
+         <pointsize>18</pointsize>
+         <italic>true</italic>
+        </font>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="menuButtonSpeed">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Speed View</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="menuButtonEndurance">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Endurance View</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="menuButtonLap">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="menuButtonDebug">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Debug Menu</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="viewDrive">
        <property name="font">
         <font>
          <family>ExcludedItalic</family>
-         <pointsize>12</pointsize>
+         <pointsize>18</pointsize>
          <italic>true</italic>
         </font>
        </property>
@@ -549,8 +612,18 @@
             </disabled>
            </palette>
           </property>
+          <property name="font">
+           <font>
+            <family>ExcludedItalic</family>
+            <pointsize>8</pointsize>
+            <italic>true</italic>
+           </font>
+          </property>
           <property name="value">
            <number>24</number>
+          </property>
+          <property name="textVisible">
+           <bool>false</bool>
           </property>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -583,7 +656,226 @@
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QGridLayout" name="gridLayout_4"/>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="3" column="0">
+               <widget class="QProgressBar" name="barRegen">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>10</height>
+                 </size>
+                </property>
+                <property name="value">
+                 <number>24</number>
+                </property>
+                <property name="textVisible">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QProgressBar" name="barTorque">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>10</height>
+                 </size>
+                </property>
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Highlight">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="170">
+                      <red>99</red>
+                      <green>204</green>
+                      <blue>92</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Highlight">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="170">
+                      <red>99</red>
+                      <green>204</green>
+                      <blue>92</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Highlight">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="170">
+                      <red>31</red>
+                      <green>117</green>
+                      <blue>204</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="value">
+                 <number>24</number>
+                </property>
+                <property name="textVisible">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QStackedWidget" name="frameSubViews">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="subViewSpeed" native="true">
+                 <property name="layoutDirection">
+                  <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <layout class="QHBoxLayout" name="frameHorizontal">
+                  <item>
+                   <widget class="QFrame" name="frameSpeed">
+                    <property name="maximumSize">
+                     <size>
+                      <width>260</width>
+                      <height>140</height>
+                     </size>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Plain</enum>
+                    </property>
+                    <property name="lineWidth">
+                     <number>0</number>
+                    </property>
+                    <widget class="QLabel" name="statSpeed">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>260</width>
+                       <height>140</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>112</pointsize>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>--</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="labelSpeed">
+                     <property name="geometry">
+                      <rect>
+                       <x>200</x>
+                       <y>120</y>
+                       <width>60</width>
+                       <height>20</height>
+                      </rect>
+                     </property>
+                     <property name="text">
+                      <string>MPH</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                     </property>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="subViewEndurance">
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QFrame" name="frameCharge">
+                    <property name="maximumSize">
+                     <size>
+                      <width>260</width>
+                      <height>140</height>
+                     </size>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Plain</enum>
+                    </property>
+                    <property name="lineWidth">
+                     <number>0</number>
+                    </property>
+                    <widget class="QLabel" name="statCharge">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>260</width>
+                       <height>140</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <pointsize>112</pointsize>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>--</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="labelCharge">
+                     <property name="geometry">
+                      <rect>
+                       <x>200</x>
+                       <y>120</y>
+                       <width>60</width>
+                       <height>20</height>
+                      </rect>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>ExcludedItalic</family>
+                       <pointsize>18</pointsize>
+                       <italic>true</italic>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>SoC</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                     </property>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -599,6 +891,13 @@
                <width>16777215</width>
                <height>80</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>ExcludedItalic</family>
+               <pointsize>18</pointsize>
+               <italic>true</italic>
+              </font>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <property name="spacing">
@@ -617,7 +916,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QPushButton" name="buttonSpeed">
+               <widget class="QPushButton" name="driveButtonSpeed">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -625,12 +924,13 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Speed View</string>
+                 <string>Speed
+View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="buttonEndurance">
+               <widget class="QPushButton" name="driveButtonEndurance">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -638,12 +938,13 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Endurance View</string>
+                 <string>Endurance
+View</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="buttonLap">
+               <widget class="QPushButton" name="driveButtonLap">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -651,12 +952,12 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Lap View</string>
+                 <string/>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="buttonMenu">
+               <widget class="QPushButton" name="driveButtonMenu">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -719,8 +1020,18 @@
             </disabled>
            </palette>
           </property>
+          <property name="font">
+           <font>
+            <family>ExcludedItalic</family>
+            <pointsize>8</pointsize>
+            <italic>true</italic>
+           </font>
+          </property>
           <property name="value">
            <number>24</number>
+          </property>
+          <property name="textVisible">
+           <bool>false</bool>
           </property>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -730,11 +1041,24 @@
        </layout>
       </widget>
       <widget class="QWidget" name="viewDebug">
+       <property name="font">
+        <font>
+         <family>Source Code Pro</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="labelDebug">
           <property name="text">
            <string>Debug Menu</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="debugButtonMenu">
+          <property name="text">
+           <string>Back</string>
           </property>
          </widget>
         </item>

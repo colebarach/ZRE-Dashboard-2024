@@ -44,6 +44,12 @@ class MainWindow : public QMainWindow
 
     #define UPDATE_INTERVAL_MS 100
 
+    #define ID_VIEW_MENU      0
+    #define ID_VIEW_SPEED     1
+    #define ID_VIEW_ENDURANCE 2
+    #define ID_VIEW_LAP       3
+    #define ID_VIEW_DEBUG     4
+
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
     MainWindow(Network::CanDatabase* database, QWidget* parent = nullptr);
@@ -54,18 +60,32 @@ class MainWindow : public QMainWindow
 
     private:
     
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
 
     QTimer* updateTimer;
 
     int* barBrakePercent;
     int* barThrottlePercent;
+    int* barTorquePercent;
+    int* barRegenPercent;
+    int* statSpeedValue;
+    int* statChargeValue;
     
+    // Private Functions ------------------------------------------------------------------------------------------------------
+
+    void setView(int id);
+
     // Slots ------------------------------------------------------------------------------------------------------------------
 
-    public slots:
+    private slots:
 
     void update();
+
+    void handleButtonMenu()      { this->setView(ID_VIEW_MENU); }
+    void handleButtonSpeed()     { this->setView(ID_VIEW_SPEED); }
+    void handleButtonEndurance() { this->setView(ID_VIEW_ENDURANCE); }
+    void handleButtonLap()       { this->setView(ID_VIEW_LAP); }
+    void handleButtonDebug()     { this->setView(ID_VIEW_DEBUG); }
 };
 
 #endif // MAIN_WINDOW_H

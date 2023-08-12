@@ -6,6 +6,7 @@
 #include "ui_main_window.h"
 
 // QT Libraries
+#include <QWidget>
 #include <QString>
 
 // C++ Standard Libraries
@@ -22,7 +23,7 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
     // Create the update timer
     updateTimer = new QTimer(this);
 
-    // Connect widgets
+    // Connect GUI events
     connect(updateTimer,              SIGNAL(timeout()), this, SLOT(update()));
     
     connect(ui->menuButtonSpeed,      SIGNAL(clicked()), this, SLOT(handleButtonSpeed()));
@@ -40,10 +41,8 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
     // Get database references
     barThrottlePercent = database->reference<int>("APPS_1_Percent");
     barBrakePercent    = database->reference<int>("Brake_1_Percent");
-
     barTorquePercent   = database->reference<int>("Torque_Config_Limit");
     barRegenPercent    = database->reference<int>("Torque_Config_Limit_Regen");
-
     statSpeedValue     = database->reference<int>("Motor_Speed");
     statChargeValue    = database->reference<int>("State_of_Charge");
 
@@ -63,10 +62,9 @@ void MainWindow::update()
     // Update widget values
     ui->barBrake->setValue(*barBrakePercent);
     ui->barThrottle->setValue(*barThrottlePercent);
-
     ui->barTorque->setValue(*barTorquePercent);
     ui->barRegen->setValue(*barRegenPercent);
-
+    
     ui->statSpeed->setText(QString::number(*statSpeedValue));
     ui->statCharge->setText(QString::number(*statChargeValue));
 

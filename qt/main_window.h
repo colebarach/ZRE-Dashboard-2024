@@ -8,11 +8,7 @@
 //   below.
 //
 // Created: 23.08.06
-// Updated: 23.08.06
-//
-// Required Database Entries:
-// - APPS_1_Percent (integer)
-// - Brake_1_Percent (integer)
+// Updated: 23.08.12
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -22,7 +18,6 @@
 // QT Libraries
 #include <QMainWindow>
 #include <QTimer>
-#include <QProgressBar>
 
 // Main window UI forward declaration
 // - This namespace and class are generated at compile-time in the ui_main_window.h file
@@ -35,8 +30,7 @@ namespace Ui
 
 class MainWindow : public QMainWindow
 {
-    // QT object boilerplate
-    Q_OBJECT
+    Q_OBJECT // QT object boilerplate
 
     public:
 

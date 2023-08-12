@@ -657,7 +657,7 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_4">
-              <item row="3" column="0">
+              <item row="4" column="0">
                <widget class="QProgressBar" name="barRegen">
                 <property name="minimumSize">
                  <size>
@@ -679,7 +679,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
+              <item row="3" column="0">
                <widget class="QProgressBar" name="barTorque">
                 <property name="minimumSize">
                  <size>
@@ -738,7 +738,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
+              <item row="1" column="0">
                <widget class="QStackedWidget" name="frameSubViews">
                 <property name="currentIndex">
                  <number>0</number>
@@ -873,6 +873,13 @@
                   </item>
                  </layout>
                 </widget>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QProgressBar" name="barRpm">
+                <property name="value">
+                 <number>24</number>
+                </property>
                </widget>
               </item>
              </layout>

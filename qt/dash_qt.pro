@@ -23,6 +23,7 @@ HEADERS += \
     main_window.h
 
 FORMS += \
+    form.ui \
     main_window.ui
 
 INCLUDEPATH += ../network

@@ -39,6 +39,7 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
     connect(ui->debugButtonMenu,      SIGNAL(clicked()), this, SLOT(handleButtonMenu()));
 
     // Get database references
+    // - TODO: These names should be macros in the header
     barThrottlePercent = database->reference<int>("APPS_1_Percent");
     barBrakePercent    = database->reference<int>("Brake_1_Percent");
     barTorquePercent   = database->reference<int>("Torque_Config_Limit");

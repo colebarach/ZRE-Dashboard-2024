@@ -1,8 +1,11 @@
 // Header
 #include "main_window.h"
 
+// Includes
+#include "config.h"
+
 // QT Includes
-// - This file is generated in the compilation of the project, it implements the UI created in the main_window.ui file
+// - These files are generated in the compilation of the project, they implement the UI created in the form files
 #include "ui_main_window.h"
 
 // QT Libraries
@@ -19,13 +22,19 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
     // Create and apply the UI
     ui = new Ui::MainWindow;
     ui->setupUi(this);
+    
+    // The UI overrides the title, so this must be done after applying
+    setWindowTitle(QString::fromStdString(std::string(BUILD_TITLE) + " - " + __DATE__ + " - QT Frontend - Rev." + BUILD_REVISION));
+
+    // Create custom widgets
+    rpmBar = new StrataBar(ui->uiStrataBarRpm);
 
     // Create the update timer
     updateTimer = new QTimer(this);
 
     // Connect GUI events
     connect(updateTimer,              SIGNAL(timeout()), this, SLOT(update()));
-    
+
     connect(ui->menuButtonSpeed,      SIGNAL(clicked()), this, SLOT(handleButtonSpeed()));
     connect(ui->menuButtonEndurance,  SIGNAL(clicked()), this, SLOT(handleButtonEndurance()));
     connect(ui->menuButtonLap,        SIGNAL(clicked()), this, SLOT(handleButtonLap()));
@@ -46,6 +55,7 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
     barRegenPercent    = database->reference<int>("Torque_Config_Limit_Regen");
     statSpeedValue     = database->reference<int>("Motor_Speed");
     statChargeValue    = database->reference<int>("State_of_Charge");
+    motorSpeed         = database->reference<int>("Motor_Speed");
 
     // Start the update timer
     updateTimer->start(UPDATE_INTERVAL_MS);
@@ -53,8 +63,13 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
 
 MainWindow::~MainWindow()
 {
-    // Delete widgets
+    // Delete UI
     delete ui;
+
+    // Delete custom widgets
+    delete rpmBar;
+
+    // Delete objects
     delete updateTimer;
 }
 
@@ -65,9 +80,11 @@ void MainWindow::update()
     ui->barThrottle->setValue(*barThrottlePercent);
     ui->barTorque->setValue(*barTorquePercent);
     ui->barRegen->setValue(*barRegenPercent);
-    
+
     ui->statSpeed->setText(QString::number(*statSpeedValue));
     ui->statCharge->setText(QString::number(*statChargeValue));
+
+    rpmBar->setValue(*motorSpeed);
 
     // Restart the timer
     updateTimer->start(UPDATE_INTERVAL_MS);

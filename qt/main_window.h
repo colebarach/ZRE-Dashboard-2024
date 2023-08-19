@@ -8,12 +8,13 @@
 //   below.
 //
 // Created: 23.08.06
-// Updated: 23.08.12
+// Updated: 23.08.19
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
 // Includes
 #include "can_database.h"
+#include "strata_bar.h"
 
 // QT Libraries
 #include <QMainWindow>
@@ -32,9 +33,9 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT // QT object boilerplate
 
-    public:
-
     // Constants --------------------------------------------------------------------------------------------------------------
+
+    public:
 
     #define UPDATE_INTERVAL_MS 100
 
@@ -56,7 +57,9 @@ class MainWindow : public QMainWindow
     
     Ui::MainWindow* ui;
 
-    QTimer* updateTimer;
+    StrataBar* rpmBar;                   // Custom RPM bar
+
+    QTimer* updateTimer;                 // Timer for the update loop
 
     int* barBrakePercent;
     int* barThrottlePercent;
@@ -64,6 +67,7 @@ class MainWindow : public QMainWindow
     int* barRegenPercent;
     int* statSpeedValue;
     int* statChargeValue;
+    int* motorSpeed;
     
     // Private Functions ------------------------------------------------------------------------------------------------------
 

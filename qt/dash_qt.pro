@@ -17,13 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    main_window.cpp
+    main_window.cpp \
+    strata_bar.cpp
 
 HEADERS += \
-    main_window.h
+    main_window.h \
+    strata_bar.h
 
 FORMS += \
-    form.ui \
     main_window.ui
 
 INCLUDEPATH += ../network

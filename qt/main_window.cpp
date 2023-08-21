@@ -23,11 +23,13 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
     ui = new Ui::MainWindow;
     ui->setupUi(this);
     
-    // The UI overrides the title, so this must be done after applying
+    // Set the build title
+    // - The UI overrides the title, so this must be done after applying
     setWindowTitle(QString::fromStdString(std::string(BUILD_TITLE) + " - " + __DATE__ + " - QT Frontend - Rev." + BUILD_REVISION));
 
     // Create custom widgets
-    rpmBar = new StrataBar(ui->uiStrataBarRpm);
+    rpmBar = new StrataBar(ui->strataBarRpm);
+    databaseTable = new CanDatabaseTable(ui->canDatabaseTable, database);
 
     // Create the update timer
     updateTimer = new QTimer(this);
@@ -38,14 +40,14 @@ MainWindow::MainWindow(Network::CanDatabase* database, QWidget* parent) : QMainW
     connect(ui->menuButtonSpeed,      SIGNAL(clicked()), this, SLOT(handleButtonSpeed()));
     connect(ui->menuButtonEndurance,  SIGNAL(clicked()), this, SLOT(handleButtonEndurance()));
     connect(ui->menuButtonLap,        SIGNAL(clicked()), this, SLOT(handleButtonLap()));
-    connect(ui->menuButtonDebug,      SIGNAL(clicked()), this, SLOT(handleButtonDebug()));
+    connect(ui->menuButtonDatabase,   SIGNAL(clicked()), this, SLOT(handleButtonDatabase()));
 
     connect(ui->driveButtonMenu,      SIGNAL(clicked()), this, SLOT(handleButtonMenu()));
     connect(ui->driveButtonSpeed,     SIGNAL(clicked()), this, SLOT(handleButtonSpeed()));
     connect(ui->driveButtonEndurance, SIGNAL(clicked()), this, SLOT(handleButtonEndurance()));
     connect(ui->driveButtonLap,       SIGNAL(clicked()), this, SLOT(handleButtonLap()));
 
-    connect(ui->debugButtonMenu,      SIGNAL(clicked()), this, SLOT(handleButtonMenu()));
+    connect(ui->databaseButtonMenu,   SIGNAL(clicked()), this, SLOT(handleButtonMenu()));
 
     // Get database references
     // - TODO: These names should be macros in the header
@@ -68,6 +70,7 @@ MainWindow::~MainWindow()
 
     // Delete custom widgets
     delete rpmBar;
+    delete databaseTable;
 
     // Delete objects
     delete updateTimer;
@@ -85,6 +88,8 @@ void MainWindow::update()
     ui->statCharge->setText(QString::number(*statChargeValue));
 
     rpmBar->setValue(*motorSpeed);
+
+    databaseTable->update();
 
     // Restart the timer
     updateTimer->start(UPDATE_INTERVAL_MS);
@@ -107,8 +112,8 @@ void MainWindow::setView(int id)
             break;
         case ID_VIEW_LAP:
             break;
-        case ID_VIEW_DEBUG:
-            ui->frameViews->setCurrentWidget(ui->viewDebug);
+        case ID_VIEW_DATABASE:
+            ui->frameViews->setCurrentWidget(ui->viewDatabase);
             break;
         default:
             throw std::runtime_error("Failed to set view: Unknown view ID " + std::to_string(id));

@@ -9,10 +9,11 @@
 // relational database for random access.
 //
 // Created: 23.07.21
-// Updated: 23.08.07
+// Updated: 23.08.21
 //
 // To do:
 // - Type safety is a big issue. Can possible implement runtime exceptions to prevent misuse.
+// - The printing should be updated to a C-Style approach.
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -131,6 +132,8 @@ namespace Network
         // Get Signal Count
         // - Call to get the number of elements in the signal array
         size_t getSignalCount() const { return this->signalCount; }
+
+        void print(std::string* destination);
 
         void print(std::ostream& stream);
     };

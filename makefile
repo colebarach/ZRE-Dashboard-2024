@@ -1,5 +1,5 @@
 # To do:
-# - I'd like to have a single makefile for the whole project, but that might not be simple
+# network.a doesn't detect changes in the source. If something is changed the -B flag must be included in the make command
 
 all: lib/network.a bin/dash_can_cli bin/dash-tui qt_build/dash_qt
 

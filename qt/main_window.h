@@ -15,6 +15,7 @@
 // Includes
 #include "can_database.h"
 #include "strata_bar.h"
+#include "can_database_table.h"
 
 // QT Libraries
 #include <QMainWindow>
@@ -40,10 +41,10 @@ class MainWindow : public QMainWindow
     #define UPDATE_INTERVAL_MS 100
 
     #define ID_VIEW_MENU      0
-    #define ID_VIEW_SPEED     1
-    #define ID_VIEW_ENDURANCE 2
-    #define ID_VIEW_LAP       3
-    #define ID_VIEW_DEBUG     4
+    #define ID_VIEW_DATABASE  1
+    #define ID_VIEW_SPEED     2
+    #define ID_VIEW_ENDURANCE 3
+    #define ID_VIEW_LAP       4
 
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
@@ -57,7 +58,8 @@ class MainWindow : public QMainWindow
     
     Ui::MainWindow* ui;
 
-    StrataBar* rpmBar;                   // Custom RPM bar
+    StrataBar*        rpmBar;            // Custom RPM bar
+    CanDatabaseTable* databaseTable;     // Table for CAN database
 
     QTimer* updateTimer;                 // Timer for the update loop
 
@@ -83,7 +85,7 @@ class MainWindow : public QMainWindow
     void handleButtonSpeed()     { this->setView(ID_VIEW_SPEED); }
     void handleButtonEndurance() { this->setView(ID_VIEW_ENDURANCE); }
     void handleButtonLap()       { this->setView(ID_VIEW_LAP); }
-    void handleButtonDebug()     { this->setView(ID_VIEW_DEBUG); }
+    void handleButtonDatabase()     { this->setView(ID_VIEW_DATABASE); }
 };
 
 #endif // MAIN_WINDOW_H

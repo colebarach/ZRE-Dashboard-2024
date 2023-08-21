@@ -2,6 +2,7 @@
 #include "can_database.h"
 
 // C++ Standard Libraries
+#include <sstream>
 #include <iostream>
 #include <iomanip>
 
@@ -232,6 +233,14 @@ namespace Network
     bool CanDatabase::getRxThreadDebug() const
     {
         return this->rxThreadDebug;
+    }
+
+    void CanDatabase::print(std::string* destination)
+    {
+        // TODO: Currently this uses string stream, I'd rather not use that. This should be replaced with a C-Style version for simplicity.
+        std::stringstream stream;
+        print(stream);
+        *destination = stream.str();
     }
 
     void CanDatabase::print(std::ostream& stream)

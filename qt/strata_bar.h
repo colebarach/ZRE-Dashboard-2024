@@ -26,7 +26,8 @@ class StrataBar : QWidget
 
     #define STRATA_SIZE  8
     #define STRATA_GAP   4
-    #define STRATA_SLOPE 0.5
+    #define STRATA_FILL_MULTIPLIER 0.5
+    // #define STRATA_SLOPE 0.5
 
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 

@@ -4,8 +4,11 @@
 // QT Libraries
 #include <QLayout>
 #include <QBrush>
+#include <QColor>
 
 // C++ Standard Libraries
+#include <exception>
+#include <stdexcept>
 #include <iostream>
 
 StrataBar::StrataBar(QWidget* parent, int minimum_, int maximum_) : QWidget(parent)
@@ -15,6 +18,7 @@ StrataBar::StrataBar(QWidget* parent, int minimum_, int maximum_) : QWidget(pare
 
     // Add this into the parent's layout
     QLayout* parentLayout = parent->layout();
+    if(parentLayout == nullptr) throw std::runtime_error("Failed to create CanDatabaseTable: The parent widget has no layout.");
     parentLayout->addWidget(this);
 
     strataCount = 0;
@@ -90,10 +94,26 @@ void StrataBar::resizeEvent(QResizeEvent* event)
 
 void StrataBar::paintEvent(QPaintEvent*)
 {
+    QColor highlightPen = Qt::green;
+    int highlightH;
+    int highlightS;
+    int highlightV;
+    highlightPen.getHsv(&highlightH, &highlightS, &highlightV);
+    QColor highlightBrush;
+    highlightBrush.setHsv(highlightH, highlightS, highlightV * STRATA_FILL_MULTIPLIER);
+
+    QColor lowlightPen = Qt::red;
+    int lowlightH;
+    int lowlightS;
+    int lowlightV;
+    lowlightPen.getHsv(&lowlightH, &lowlightS, &lowlightV);
+    QColor lowlightBrush;
+    lowlightBrush.setHsv(lowlightH, lowlightS, lowlightV * STRATA_FILL_MULTIPLIER);
+    
     // Create painter and set color
-    QBrush brush(Qt::green, Qt::SolidPattern);
+    QBrush brush(highlightBrush, Qt::SolidPattern);
     QPainter painter(this);
-    painter.setPen(Qt::green);
+    painter.setPen(highlightPen);
     painter.setBrush(brush);
     
     bool painterIsHighlight = true; // Indicates color of the painter, true => highlight, false => lowlight
@@ -109,8 +129,8 @@ void StrataBar::paintEvent(QPaintEvent*)
             // Paint highlight
             if(!painterIsHighlight)
             {
-                brush.setColor(Qt::green);
-                painter.setPen(Qt::green);
+                brush.setColor(highlightBrush);
+                painter.setPen(highlightPen);
                 painter.setBrush(brush);
                 painterIsHighlight = true;
             }
@@ -120,8 +140,8 @@ void StrataBar::paintEvent(QPaintEvent*)
             // Paint lowlight
             if(painterIsHighlight)
             {
-                brush.setColor(Qt::red);
-                painter.setPen(Qt::red);
+                brush.setColor(lowlightBrush);
+                painter.setPen(lowlightPen);
                 painter.setBrush(brush);
                 painterIsHighlight = false;
             }

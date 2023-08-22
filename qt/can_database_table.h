@@ -6,7 +6,10 @@
 // Description: A table displaying the contents of a CAN database.
 //
 // Created: 23.08.21
-// Updated: 23.08.21
+// Updated: 23.08.22
+//
+// To do:
+// - Make a decision on single label vs group. If using single, this widget doesn't really need to exist.
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 

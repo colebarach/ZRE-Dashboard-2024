@@ -246,7 +246,7 @@ namespace Network
     void CanDatabase::print(std::ostream& stream)
     {
         stream << "   " << std::setw(32) << "Signal Name";
-        stream << " | " << std::setw(10) << "Value";
+        stream << " | " << std::setw(7) << "Value";
         stream << " | " << std::setw(8)  << "Bit Mask";
         stream << " | " << std::setw(10) << "Bit Length";
         stream << " | " << std::setw(12) << "Bit Position";
@@ -268,26 +268,26 @@ namespace Network
                 if(s.datatypeId == ID_DATATYPE_UINT)
                 {
                     unsigned int data = get<unsigned int>(sIndex);
-                    stream << " | " << std::setw(10) << std::dec << data;
+                    stream << " | " << std::setw(7) << std::dec << data;
                 }
                 else if(s.datatypeId == ID_DATATYPE_INT)
                 {
                     int data = get<int>(sIndex);
-                    stream << " | " << std::setw(10) << std::dec << data;
+                    stream << " | " << std::setw(7) << std::dec << data;
                 }
                 else if(s.datatypeId == ID_DATATYPE_BOOL)
                 {
                     bool data = get<bool>(sIndex);
-                    stream << " | " << std::setw(10) << std::dec << data;
+                    stream << " | " << std::setw(7) << std::dec << data;
                 }
                 else if(s.datatypeId == ID_DATATYPE_DOUBLE)
                 {
                     double data = get<double>(sIndex);
-                    stream << " | " << std::setw(10) << std::dec << data;
+                    stream << " | " << std::setw(7) << std::dec << data;
                 }
                 else
                 {
-                    stream << " | " << std::setw(10) << "--";
+                    stream << " | " << std::setw(7) << "--";
                 }
 
                 stream << " | " << std::setw(8)  << std::hex << s.bitMask;

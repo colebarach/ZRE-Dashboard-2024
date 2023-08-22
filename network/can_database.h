@@ -9,7 +9,7 @@
 // relational database for random access.
 //
 // Created: 23.07.21
-// Updated: 23.08.21
+// Updated: 23.08.22
 //
 // To do:
 // - Type safety is a big issue. Can possible implement runtime exceptions to prevent misuse.

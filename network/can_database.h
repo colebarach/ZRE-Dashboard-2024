@@ -133,7 +133,7 @@ namespace Network
         // - Call to get the number of elements in the signal array
         size_t getSignalCount() const { return this->signalCount; }
 
-        void print(std::string* destination);
+        void print(std::string* destination) override;
 
         void print(std::ostream& stream);
     };

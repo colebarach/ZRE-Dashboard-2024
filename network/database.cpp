@@ -142,6 +142,11 @@ namespace Network
         *reinterpret_cast<T*>(entries[index].dataPtr) = data;
     }
 
+    void Database::print(std::string* destination)
+    {
+        
+    }
+
     // Template Forward Declarations ------------------------------------------------------------------------------------------
     
     // This is done so that the database can only be used for known datatypes

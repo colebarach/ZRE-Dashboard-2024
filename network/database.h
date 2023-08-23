@@ -6,7 +6,7 @@
 // Author: Cole Barach
 //
 // Created: 23.07.12
-// Updated: 23.08.07
+// Updated: 23.08.23
 //
 //   A relational database for primative datatypes. Entries are stored as a key/value pair, similar to the standard map. The
 //   difference between this and the standard map is that entries can be any primate datatype. To access a value, the reference
@@ -18,8 +18,7 @@
 // - Test for logic errors and memory leaks. I think this is all good, but things were changed recently.
 // - Consider using unions instead of void*. This should slightly more typesafe, as only specified types can be used. This
 //   would break structs, but structs shouldn't even be used in here. What about arrays?
-// - Make doxygen-compatible header format. This goes for all headers really.
-// - Should this really be in the network namespace?
+// - Clean printing
 // - Needs more documentation
 // - Needs more debug messages
 
@@ -27,6 +26,9 @@
 
 // C Standard Libraries
 #include "stddef.h"
+
+// C++ Standard Libraries
+#include <string>
 
 // Network Namespace ----------------------------------------------------------------------------------------------------------
 
@@ -92,6 +94,9 @@ namespace Network
         // - Will throw a standard exception if insertion fails
         template<typename T>
         void insert(const T& data, const char* key);
+
+        // TODO: Find better way of doing this
+        virtual void print(std::string* destination);
 
         // Protected Objects --------------------------------------------------------------------------------------------------
         

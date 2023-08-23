@@ -22,12 +22,16 @@
 
 // Database Keys --------------------------------------------------------------------------------------------------------------
 
-#define MOTOR_SPEED     "Motor_Speed"                   // Integer
-#define MOTOR_MPH       "Motor_Speed"                   // Integer
-#define STATE_OF_CHARGE "State_of_Charge"               // Integer
-#define TEMP_ACC_MAX    "Temperature_BMS_Max"           // Integer
-#define TEMP_INV_MAX    "Temperature_Inverter_Module_A" // Integer
-#define TEMP_MOTOR_MAX  "Temperature_Motor"             // Integer
+#define MOTOR_SPEED      "Motor_Speed"                   // Integer
+#define MOTOR_MPH        "Motor_Speed"                   // Integer
+#define STATE_OF_CHARGE  "State_of_Charge"               // Integer
+#define TEMP_ACC_MAX     "Temperature_BMS_Max"           // Integer
+#define TEMP_INV_MAX     "Temperature_Inverter_Module_A" // Integer
+#define TEMP_MOTOR_MAX   "Temperature_Motor"             // Integer
+#define THROTTLE_PERCENT "APPS_1_Percent"                // Integer
+#define BRAKE_PERCENT    "Brake_1_Percent"               // Integer
+#define TORQUE_PERCENT   "Torque_Config_Limit"           // Integer
+#define REGEN_PERCENT    "Torque_Config_Limit_Regen"     // Integer
 
 // Classes --------------------------------------------------------------------------------------------------------------------
 
@@ -78,6 +82,10 @@ class ViewDrive : public View
     int* tempAccumulatorMax;
     int* tempInverterMax;
     int* tempMotorMax;
+    int* throttlePercent;
+    int* brakePercent;
+    int* torquePercent;
+    int* regenPercent;
 };
 
 #endif // VIEW_DRIVE_H

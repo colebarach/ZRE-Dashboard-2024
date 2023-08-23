@@ -3,7 +3,9 @@
 
 // Includes
 #include "config.h"
+#include "view_menu.h"
 #include "view_drive.h"
+#include "view_debug.h"
 
 // UI Includes
 #include "ui_main_window.h"
@@ -29,8 +31,13 @@ MainWindow::MainWindow(Network::Database* database, QWidget* parent) : QMainWind
     setWindowTitle(QString::fromStdString(std::string(BUILD_TITLE) + " - " + __DATE__ + " - QT Frontend - Rev." + BUILD_REVISION));
 
     // Create views
+    viewMenu  = new ViewMenu(ui->frameViews, this, database);
     viewDrive = new ViewDrive(ui->frameViews, this, database);
+    viewDebug = new ViewDebug(ui->frameViews, this, database);
+
+    ui->frameViews->addWidget(viewMenu);
     ui->frameViews->addWidget(viewDrive);
+    ui->frameViews->addWidget(viewDebug);
 
     // Create the update timer
     updateTimer = new QTimer(this);
@@ -56,17 +63,15 @@ void MainWindow::setView(int viewId)
     switch(viewId)
     {
         case ID_VIEW_MENU:
-            // ui->frameViews->setCurrentWidget();
-            std::cout << "Menu..." << std::endl;
+            ui->frameViews->setCurrentWidget(viewMenu);
             break;
         case ID_VIEW_DEBUG:
-            // ui->frameViews->setCurrentWidget();
+            ui->frameViews->setCurrentWidget(viewDebug);
             break;
         case ID_VIEW_DRIVE:
             ui->frameViews->setCurrentWidget(viewDrive);
             break;
         case ID_VIEW_SETTINGS:
-            // ui->frameViews->setCurrentWidget();
             break;
         default:
             throw std::runtime_error("Failed to set view: Unknown view ID " + std::to_string(viewId));
@@ -75,7 +80,9 @@ void MainWindow::setView(int viewId)
 
 void MainWindow::update()
 {
+    viewMenu->update();
     viewDrive->update();
+    viewDebug->update();
 
     // Restart the timer
     updateTimer->start(UPDATE_INTERVAL_MS);

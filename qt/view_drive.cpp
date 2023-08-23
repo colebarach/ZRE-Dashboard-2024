@@ -23,6 +23,10 @@ ViewDrive::ViewDrive(QWidget* parent_, MainWindow* mainWindow_, Network::Databas
     tempAccumulatorMax = database->reference<int>(TEMP_ACC_MAX);
     tempInverterMax    = database->reference<int>(TEMP_INV_MAX);
     tempMotorMax       = database->reference<int>(TEMP_MOTOR_MAX);
+    throttlePercent    = database->reference<int>(THROTTLE_PERCENT);
+    brakePercent       = database->reference<int>(BRAKE_PERCENT);
+    torquePercent      = database->reference<int>(TORQUE_PERCENT);
+    regenPercent       = database->reference<int>(REGEN_PERCENT);
 
     // Connect GUI events
     connect(ui->buttonSpeed,     SIGNAL(clicked()), this, SLOT(handleButtonSpeed()));
@@ -44,9 +48,15 @@ void ViewDrive::update()
     rpmBar->setValue(*motorSpeed);
     ui->statSpeed->setText(QString::number(*motorMph));
     ui->statCharge->setText(QString::number(*stateOfCharge));
+    ui->statCharge2->setText(QString::number(*stateOfCharge));
     ui->statTempAccumulatorMax->setText(QString::number(*tempAccumulatorMax));
     ui->statTempInverterMax->setText(QString::number(*tempInverterMax));
     ui->statTempMotorMax->setText(QString::number(*tempMotorMax));
+
+    ui->barThrottle->setValue(*throttlePercent);
+    ui->barBrake->setValue(*brakePercent);
+    ui->barTorque->setValue(*torquePercent);
+    ui->barRegen->setValue(*regenPercent);
 }
 
 void ViewDrive::handleButtonSpeed()

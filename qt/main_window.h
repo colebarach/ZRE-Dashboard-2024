@@ -8,6 +8,9 @@
 //
 // Created: 23.08.06
 // Updated: 23.08.23
+//
+// To do:
+// - Only update visible views
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -64,9 +67,11 @@ class MainWindow : public QMainWindow
     private:
     
     Ui::MainWindow*    ui;               // UI of the window, sourced from main_window.ui
+    View*              viewMenu;         // Menu view, instance from view_menu.h
     View*              viewDrive;        // Driving view, instance from view_drive.h
+    View*              viewDebug;        // Debug view, instance from view_debug.h
 
-    Network::Database* database;         // Database to visualize
+    Network::Database* database;         // Database to be visualized
 
     QTimer* updateTimer;                 // Timer for the update loop
 };

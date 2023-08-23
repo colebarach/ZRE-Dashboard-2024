@@ -18,16 +18,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     main_window.cpp \
-    strata_bar.cpp \
-    can_database_table.cpp
+    view_drive.cpp \
+    strata_bar.cpp
 
 HEADERS += \
     main_window.h \
-    strata_bar.h \
-    can_database_table.h
+    view.h \
+    view_drive.h \
+    strata_bar.h
 
 FORMS += \
-    main_window.ui
+    main_window.ui \
+    view_menu.ui \
+    view_drive.ui \
+    view_settings.ui \
+    view_debug.ui
 
 INCLUDEPATH += ../network
 

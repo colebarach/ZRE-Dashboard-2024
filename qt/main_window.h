@@ -3,19 +3,17 @@
 
 // Main Window ----------------------------------------------------------------------------------------------------------------
 //
-// Description: The main window of the dash application. Instancing this will open a new window bound to the speficied CAN
-//   database. This window will display specific entries of the database as they update. For a list of the used entries, see
-//   below.
+// Description: The main window of the dash application. Instancing this will open a new window bound to the speficied database
+//   This window will display specific entries of the database as they update. For a list of the used entries, see below.
 //
 // Created: 23.08.06
-// Updated: 23.08.19
+// Updated: 23.08.23
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
 // Includes
-#include "can_database.h"
-#include "strata_bar.h"
-#include "can_database_table.h"
+#include "database.h"
+#include "view.h"
 
 // QT Libraries
 #include <QMainWindow>
@@ -40,40 +38,20 @@ class MainWindow : public QMainWindow
 
     #define UPDATE_INTERVAL_MS 100
 
-    #define ID_VIEW_MENU      0
-    #define ID_VIEW_DATABASE  1
-    #define ID_VIEW_SPEED     2
-    #define ID_VIEW_ENDURANCE 3
-    #define ID_VIEW_LAP       4
+    #define ID_VIEW_MENU     0
+    #define ID_VIEW_DEBUG    1
+    #define ID_VIEW_DRIVE    2
+    #define ID_VIEW_SETTINGS 3
 
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
-    MainWindow(Network::CanDatabase* database, QWidget* parent = nullptr);
+    MainWindow(Network::Database* database, QWidget* parent = nullptr);
     
     ~MainWindow();
 
-    // Private Variables ------------------------------------------------------------------------------------------------------
-
-    private:
-    
-    Ui::MainWindow* ui;
-
-    StrataBar*        rpmBar;            // Custom RPM bar
-    CanDatabaseTable* databaseTable;     // Table for CAN database
-
-    QTimer* updateTimer;                 // Timer for the update loop
-
-    int* barBrakePercent;
-    int* barThrottlePercent;
-    int* barTorquePercent;
-    int* barRegenPercent;
-    int* statSpeedValue;
-    int* statChargeValue;
-    int* motorSpeed;
-    
     // Private Functions ------------------------------------------------------------------------------------------------------
 
-    void setView(int id);
+    void setView(int viewId);
 
     // Slots ------------------------------------------------------------------------------------------------------------------
 
@@ -81,11 +59,16 @@ class MainWindow : public QMainWindow
 
     void update();
 
-    void handleButtonMenu()      { this->setView(ID_VIEW_MENU); }
-    void handleButtonSpeed()     { this->setView(ID_VIEW_SPEED); }
-    void handleButtonEndurance() { this->setView(ID_VIEW_ENDURANCE); }
-    void handleButtonLap()       { this->setView(ID_VIEW_LAP); }
-    void handleButtonDatabase()     { this->setView(ID_VIEW_DATABASE); }
+    // Private Variables ------------------------------------------------------------------------------------------------------
+
+    private:
+    
+    Ui::MainWindow*    ui;               // UI of the window, sourced from main_window.ui
+    View*              viewDrive;        // Driving view, instance from view_drive.h
+
+    Network::Database* database;         // Database to visualize
+
+    QTimer* updateTimer;                 // Timer for the update loop
 };
 
 #endif // MAIN_WINDOW_H

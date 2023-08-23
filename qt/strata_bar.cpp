@@ -18,7 +18,7 @@ StrataBar::StrataBar(QWidget* parent, int minimum_, int maximum_) : QWidget(pare
 
     // Add this into the parent's layout
     QLayout* parentLayout = parent->layout();
-    if(parentLayout == nullptr) throw std::runtime_error("Failed to create CanDatabaseTable: The parent widget has no layout.");
+    if(parentLayout == nullptr) throw std::runtime_error("Failed to create StrataBar: The parent widget has no layout.");
     parentLayout->addWidget(this);
 
     strataCount = 0;

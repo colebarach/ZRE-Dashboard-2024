@@ -1,6 +1,8 @@
 // Includes
-#include "main_window.h"
+// - The CAN database must be included first, as including the main window will define a macro affecting the compliation of the
+//   code in the CAN database header.
 #include "can_database.h"
+#include "main_window.h"
 
 // QT Libraries
 #include <QApplication>

@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 	bool isValid = handleArguments(argc, argv, &deviceName, &dbcPath);
 	if(!isValid) return 0;
 
-	Network::CanDatabase database(dbcPath, deviceName);
+	Network::CanDatabase database(dbcPath.c_str(), deviceName.c_str());
 
     initscr();
 

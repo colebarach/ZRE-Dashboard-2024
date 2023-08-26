@@ -61,7 +61,7 @@ namespace Network
         // - Call to parse the contents of a DBC file into CAN Messages and Signals
         // - Allocates dynamic arrays storing the new messages and signals
         // - Updates the message and signal pointers to refer to the new arrays
-        void parseFile(std::string filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount);
+        void parseFile(const char* filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount);
     }
 }
 

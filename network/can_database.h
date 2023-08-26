@@ -43,6 +43,8 @@ namespace Network
 
         #define SOCKET_RX_TIMEOUT_MS 1000
 
+        #define WIDTH_SIGNAL_NAME 32
+
         // Member Variables ---------------------------------------------------------------------------------------------------
 
         private:
@@ -67,7 +69,7 @@ namespace Network
         // Constructor
         // - Creates a CAN Database tied to the specified device and DBC file
         // - Creates a thread for scanning the CAN bus for incoming messages
-        CanDatabase(const std::string& databaseFilePath, const std::string& canDeviceName);
+        CanDatabase(const char* databaseFilePath, const char* canDeviceName);
 
         // Destructor
         // - Deallocates the database memory and terminates the RX thread
@@ -133,9 +135,7 @@ namespace Network
         // - Call to get the number of elements in the signal array
         size_t getSignalCount() const { return this->signalCount; }
 
-        void print(std::string* destination) override;
-
-        void print(std::ostream& stream);
+        void print(char* buffer, size_t bufferSize) override;
     };
 }
 

@@ -11,7 +11,7 @@
 
 namespace Network
 {
-    void CanDbc::parseFile(std::string filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount)
+    void CanDbc::parseFile(const char* filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount)
     {
         #ifdef DEBUG_GENERAL
         std::cout << "Loading dbc file \"" << filePath << "\"..." << std::endl;

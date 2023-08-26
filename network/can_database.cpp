@@ -1,27 +1,25 @@
 // Header
 #include "can_database.h"
 
-// C++ Standard Libraries
-#include <sstream>
+// Includes
+#include "log.h"
+
 #include <iostream>
 #include <iomanip>
 
 // C Standard Libraries
 #include <string.h>
+#include <errno.h>
 
 namespace Network
 {
-    CanDatabase::CanDatabase(const std::string& databaseFilePath, const std::string& canDeviceName) : txInterface(canDeviceName.c_str()), rxInterface(canDeviceName.c_str())
+    CanDatabase::CanDatabase(const char* databaseFilePath, const char* canDeviceName) : txInterface(canDeviceName), rxInterface(canDeviceName)
     {
-        #ifdef DEBUG_GENERAL
-        std::cout << "Creating CAN database bound to device \"" << canDeviceName << "\" using DBC file \"" << databaseFilePath << "\"..." << std::endl;
-        #endif
-
+        LOG_INFO("Creating CAN database bound to device '%s' using DBC file '%s'...\n", canDeviceName, databaseFilePath);
+        
         CanDbc::parseFile(databaseFilePath, &messages, &signals, &messageCount, &signalCount);
 
-        #ifdef DEBUG_GENERAL
-        std::cout << "Read DBC file. Allocating " << signalCount << " entries... " << std::endl;
-        #endif
+        LOG_INFO("Read DBC file. Allocating %lu entries...\n", signalCount);
 
         this->allocate(signalCount);
 
@@ -51,7 +49,10 @@ namespace Network
             }
             else
             {
-                throw std::runtime_error("Failed to create CAN database: Signal \"" + std::string(signal.name) + "\" has unknown datatype.");
+                // Default to int and log error.
+                LOG_ERROR("Failed to create CAN database: Signal '%s' has unknown datatype.\n", signal.name);
+                int data = 0;
+                this->insert(data, signal.name);
             }
         }
 
@@ -65,11 +66,11 @@ namespace Network
 
     CanDatabase::~CanDatabase()
     {
-        std::cout << "Terminating RX thread..." << std::endl;
+        LOG_INFO("Terminating RX thread...\n");
 
         this->endRxThread();
 
-        std::cout << "RX thread ended." << std::endl;
+        LOG_INFO("RX thread ended.\n");
 
         // Delete allocated strings
         for(size_t index = 0; index < messageCount; ++index)
@@ -84,15 +85,13 @@ namespace Network
         // Delete message and signal arrays
         delete [] messages;
         delete [] signals;
+
+        LOG_INFO("CAN database destroyed.\n");
     }
 
     template<typename T>
     void CanDatabase::send(const char* key, const T& value)
     {
-        #ifdef DEBUG_TRAFFIC
-        std::cout << "Sending signal \"" << key << "\": " << value << std::endl;
-        #endif
-
         // Identify the parent message
         size_t targetIndex = find(key);
         CanMessage& message = messages[signals[targetIndex].messageIndex];
@@ -121,7 +120,8 @@ namespace Network
                     messageData |= CanSocket::encodeBool(get<bool>(index), signal);
                     break;
                 default:
-                    throw std::runtime_error(std::string("Failed to send database message: The signal \"") + signal.name + "\" has an unknown datatype \"" + std::to_string(signal.datatypeId) + "\"");
+                    LOG_ERROR("Failed to send database message: The signal '%s' has an unknown datatype %i\n", key, signal.datatypeId);
+                    throw std::runtime_error(std::string("Failed to send database message: The signal '") + signal.name + "' has an unknown datatype " + std::to_string(signal.datatypeId) + "'");
                     break;
             }
         }
@@ -133,9 +133,7 @@ namespace Network
 
     void* CanDatabase::scanRx(void* database_)
     {
-        #ifdef DEBUG_GENERAL
-        std::cout << "Beginning RX thread..." << std::endl;
-        #endif
+        LOG_INFO("Beginning RX thread...\n");
         
         CanDatabase* database = reinterpret_cast<CanDatabase*>(database_);
 
@@ -145,9 +143,10 @@ namespace Network
 
         while(database->rxThreadControl)
         {
-            #ifdef DEBUG_GENERAL
-            if(database->rxThreadDebug) std::cout << "RX thread scanning..." << std::endl;
-            #endif
+            if(database->rxThreadDebug)
+            {
+                LOG_INFO("RX thread scanning...\n");
+            }
             
             try
             {
@@ -190,14 +189,15 @@ namespace Network
                     messageFound = true;
                 }
 
-                #ifdef DEBUG_GENERAL
-                if(!messageFound && database->rxThreadDebug) std::cout << "Received unknown message, ID: " << std::hex << id << ". Ignoring..." << std::endl;
-                #endif
+                if(!messageFound && database->rxThreadDebug)
+                {
+                    LOG_WARN("Received unknown message, ID: %X. Ignoring...\n", id);
+                }
             }
             catch(const PosixSocket::Timeout& exception) {}
             catch(const std::exception& exception)
             {
-                std::cerr << "RX thread error: " << exception.what() << std::endl;
+                LOG_WARN("RX thread error: %s\n", exception.what());
             }
         }
 
@@ -235,68 +235,105 @@ namespace Network
         return this->rxThreadDebug;
     }
 
-    void CanDatabase::print(std::string* destination)
+    void CanDatabase::print(char* buffer, size_t bufferSize)
     {
-        // TODO: Currently this uses string stream, I'd rather not use that. This should be replaced with a C-Style version for simplicity.
-        std::stringstream stream;
-        print(stream);
-        *destination = stream.str();
-    }
+        int index = 0;
 
-    void CanDatabase::print(std::ostream& stream)
-    {
-        stream << "   " << std::setw(32) << "Signal Name";
-        stream << " | " << std::setw(7) << "Value";
-        stream << " | " << std::setw(8)  << "Bit Mask";
-        stream << " | " << std::setw(10) << "Bit Length";
-        stream << " | " << std::setw(12) << "Bit Position";
-        stream << " | " << std::setw(4)  << "Type" << std::endl;
+        index = snprintf(buffer, bufferSize, "%32s | %7s | %8s | %10s | %12s | %4s \n\n", "Signal Name", "Value", "Bit Mask", "Bit Length", "Bit Position", "Type");
         
+        if(index <= 0)
+        {
+            LOG_ERROR("Failed to print CAN database: %s\n", strerror(errno));
+            return;
+        }
+        if(static_cast<int>(bufferSize) - index <= 0)
+        {
+            LOG_ERROR("Failed to print CAN database: Buffer is too small.\n");
+            return;
+        }
+
+        buffer += index;
+        bufferSize -= index;
+
         for(size_t mIndex = 0; mIndex < messageCount; ++mIndex)
         {
             const CanMessage& m = messages[mIndex];
 
-            stream << m.name << " - ID: " << std::hex << std::setw(3) << m.id << " " << std::setw(84 - strlen(m.name)) << std::setfill('-') << "-" << std::endl;
-            stream << std::setfill(' ');
+            index = snprintf(buffer, bufferSize, "%s - ID: %3X\n", m.name, m.id);
+            
+            if(index <= 0)
+            {
+                LOG_ERROR("Failed to print CAN database: %s\n", strerror(errno));
+                return;
+            }
+            if(static_cast<int>(bufferSize) - index <= 0)
+            {
+                LOG_ERROR("Failed to print CAN database: Buffer is too small.\n");
+                return;
+            }
+
+            buffer += index;
+            bufferSize -= index;
 
             for(size_t sIndex = m.signalIndex; sIndex < m.signalIndex + m.signalCount; ++sIndex)
             {
                 const CanSignal& s = m.signalArray[sIndex];
 
-                stream << "   " << std::setw(32) << s.name;
-
                 if(s.datatypeId == ID_DATATYPE_UINT)
                 {
                     unsigned int data = get<unsigned int>(sIndex);
-                    stream << " | " << std::setw(7) << std::dec << data;
+                    index = snprintf(buffer, bufferSize, "%32s | %7u | %8lX | %10i | %12i | %4i \n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId);
                 }
                 else if(s.datatypeId == ID_DATATYPE_INT)
                 {
                     int data = get<int>(sIndex);
-                    stream << " | " << std::setw(7) << std::dec << data;
+                    index =snprintf(buffer, bufferSize, "%32s | %7i | %8lX | %10i | %12i | %4i \n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId);
                 }
                 else if(s.datatypeId == ID_DATATYPE_BOOL)
                 {
-                    bool data = get<bool>(sIndex);
-                    stream << " | " << std::setw(7) << std::dec << data;
+                    unsigned int data = static_cast<unsigned int>(get<bool>(sIndex));
+                    index = snprintf(buffer, bufferSize, "%32s | %7u | %8lX | %10i | %12i | %4i \n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId);
                 }
                 else if(s.datatypeId == ID_DATATYPE_DOUBLE)
                 {
                     double data = get<double>(sIndex);
-                    stream << " | " << std::setw(7) << std::dec << data;
+                    index = snprintf(buffer, bufferSize, "%32s | %7f | %8lX | %10i | %12i | %4i \n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId);
                 }
                 else
                 {
-                    stream << " | " << std::setw(7) << "--";
+                    index = snprintf(buffer, bufferSize, "%32s | --      | %8lX | %10i | %12i | %4i \n", s.name, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId);
                 }
 
-                stream << " | " << std::setw(8)  << std::hex << s.bitMask;
-                stream << " | " << std::setw(10) << std::dec << s.bitLength;
-                stream << " | " << std::setw(12) << std::dec << s.bitPosition;
-                stream << " | " << std::setw(4)  << std::dec << s.datatypeId << std::endl;
+                if(index <= 0)
+                {
+                    LOG_ERROR("Failed to print CAN database: %s\n", strerror(errno));
+                    return;
+                }
+                if(static_cast<int>(bufferSize) - index <= 0)
+                {
+                    LOG_ERROR("Failed to print CAN database: Buffer is too small.\n");
+                    return;
+                }
+
+                buffer += index;
+                bufferSize -= index;
             }
 
-            stream << std::endl;
+            index = snprintf(buffer, bufferSize, "\n");
+
+            if(index <= 0)
+            {
+                LOG_ERROR("Failed to print CAN database: %s\n", strerror(errno));
+                return;
+            }
+            if(static_cast<int>(bufferSize) - index <= 0)
+            {
+                LOG_ERROR("Failed to print CAN database: Buffer is too small.\n");
+                return;
+            }
+
+            buffer += index;
+            bufferSize -= index;
         }
     }
 

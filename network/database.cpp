@@ -142,7 +142,7 @@ namespace Network
         *reinterpret_cast<T*>(entries[index].dataPtr) = data;
     }
 
-    void Database::print(std::string* destination)
+    void Database::print(char* buffer, size_t bufferSize)
     {
         
     }

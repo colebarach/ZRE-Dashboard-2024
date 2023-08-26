@@ -95,8 +95,7 @@ namespace Network
         template<typename T>
         void insert(const T& data, const char* key);
 
-        // TODO: Find better way of doing this
-        virtual void print(std::string* destination);
+        virtual void print(char* buffer, size_t bufferSize);
 
         // Protected Objects --------------------------------------------------------------------------------------------------
         

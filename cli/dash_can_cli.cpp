@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     bool isValid = handleArguments(argc, argv, &deviceName, &dbcFileName);
     if(!isValid) return 0;
 
-    Network::CanDatabase database(dbcFileName, deviceName);
+    Network::CanDatabase database(dbcFileName.c_str(), deviceName.c_str());
     Network::CanSocket   rawSocket(deviceName.c_str());
 
     while(true)
@@ -223,7 +223,7 @@ void handleMenu(Network::CanDatabase& database, Network::CanSocket& rawSocket)
     else if(option == 'p')
     {
         std::cout << "Database Table:" << std::endl;
-        database.print(std::cout);
+        // database.print(std::cout); // TODO: Reimplement
     }
     else if(option == 'n')
     {

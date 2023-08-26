@@ -39,6 +39,7 @@ FORMS += \
     view_settings.ui
 
 INCLUDEPATH += ../network
+INCLUDEPATH += ../logging
 
 LIBS += ../lib/network.a
 

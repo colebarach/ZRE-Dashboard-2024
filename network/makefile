@@ -6,6 +6,7 @@ ARC_FLAGS := -rv
 
 LIB_DIR := ../lib
 OBJ_DIR := ../obj
+INCLUDE_DIR := ../logging
 
 SRC := $(wildcard *.cpp)
 OBJ := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
@@ -22,4 +23,4 @@ $(TARGET): $(OBJ)
 
 $(OBJ_DIR)/%.o: %.cpp
 	mkdir -p $(OBJ_DIR)
-	$(CC) $(CC_FLAGS) -c $^ -o $@
+	$(CC) $(CC_FLAGS) -I $(INCLUDE_DIR) -c $^ -o $@

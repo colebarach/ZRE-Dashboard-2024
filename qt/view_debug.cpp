@@ -25,9 +25,8 @@ ViewDebug::~ViewDebug()
 
 void ViewDebug::update()
 {
-    std::string databaseText;
-    database->print(&databaseText);
-    ui->labelCanDatabase->setText(QString::fromStdString(databaseText));
+    database->print(databaseText, DATABASE_TEXT_SIZE);
+    ui->labelCanDatabase->setText(QString(databaseText));
 }
 
 void ViewDebug::handleButtonMenu()

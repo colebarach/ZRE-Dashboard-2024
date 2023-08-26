@@ -7,7 +7,6 @@
 //
 // Created: 23.08.23
 // Updated: 23.08.23
-//
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -30,6 +29,10 @@ class ViewDebug : public View
 {
     Q_OBJECT // QT object boilerplate
     
+    // Constants --------------------------------------------------------------------------------------------------------------
+
+    #define DATABASE_TEXT_SIZE 16384
+
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
     public:
@@ -53,6 +56,8 @@ class ViewDebug : public View
     protected:
 
     Ui::ViewDebug* ui;
+
+    char databaseText[DATABASE_TEXT_SIZE];
 };
 
 #endif // VIEW_DEBUG_H

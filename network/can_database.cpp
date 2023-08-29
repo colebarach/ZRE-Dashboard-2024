@@ -16,8 +16,6 @@ namespace Network
         
         CanDbc::parseFile(databaseFilePath, &messages, &signals, &messageCount, &signalCount);
 
-        LOG_INFO("Read DBC file. Allocating %lu entries...\n", signalCount);
-
         this->allocate(signalCount);
 
         for(size_t index = 0; index < signalCount; ++index)

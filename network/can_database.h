@@ -32,11 +32,6 @@ namespace Network
 {
     class CanDatabase : public Database
     {
-        // Compilation Flags --------------------------------------------------------------------------------------------------
-
-        #define DEBUG_GENERAL
-        #define DEBUG_TRAFFIC
-
         // Constants ----------------------------------------------------------------------------------------------------------
 
         #define SOCKET_RX_TIMEOUT_MS 1000

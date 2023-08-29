@@ -6,7 +6,7 @@
 // Author: Cole Barach
 //
 // Created: 23.07.12
-// Updated: 23.08.23
+// Updated: 23.08.28
 //
 //   A relational database for primative datatypes. Entries are stored as a key/value pair, similar to the standard map. The
 //   difference between this and the standard map is that entries can be any primate datatype. To access a value, the reference
@@ -35,6 +35,10 @@ namespace Network
 
     class Database
     {
+        // Compliation Flags --------------------------------------------------------------------------------------------------
+
+        #define LOG_INSERTION
+
         // Constants ----------------------------------------------------------------------------------------------------------
 
         #define DATABASE_KEY_LENGTH 64       // Maximum length of a database key

@@ -1,9 +1,11 @@
 // Header
 #include "posix_socket.h"
 
+// Includes
+#include "log.h"
+
 // C++ Libraries
 #include <string>
-#include <iostream>
 
 // C Standard Libraries
 #include <errno.h>
@@ -22,7 +24,11 @@ namespace Network
 
     void PosixSocket::setTimeoutMs(unsigned long int timeMs)
     {
-        if(this->descriptor == -1) throw std::runtime_error("Failed to set socket timeout: The socket descriptor is invalid.");
+        if(this->descriptor == -1)
+        {
+            LOG_ERROR("Failed to set socket timeout: The socket descriptor is invalid.\n");
+            throw std::runtime_error("Failed to set socket timeout: The socket descriptor is invalid.");
+        }
 
         struct timeval timeout {0, 0};
 
@@ -36,6 +42,7 @@ namespace Network
         if(this->errorCode != 0)
         {
             this->errorCode = errno;
+            LOG_ERROR("Failed to set socket timeout: %s\n", strerror(this->errorCode));
             throw std::runtime_error("Failed to set socket timeout: " + std::string(strerror(this->errorCode)));
         }
     }

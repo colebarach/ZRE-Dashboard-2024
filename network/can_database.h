@@ -6,14 +6,13 @@
 // Author: Cole Barach
 //
 // Description: An interface for CAN bus communication. Received messages are parsed using a DBC file and stored in a
-// relational database for random access.
+//   relational database for random access.
 //
 // Created: 23.07.21
-// Updated: 23.08.22
+// Updated: 23.08.26
 //
 // To do:
 // - Type safety is a big issue. Can possible implement runtime exceptions to prevent misuse.
-// - The printing should be updated to a C-Style approach.
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -25,7 +24,6 @@
 // C++ Standard Libraries
 #include <vector>
 #include <string>
-#include <iostream>
 
 // POSIX Libraries
 #include <pthread.h>

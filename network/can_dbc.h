@@ -8,12 +8,13 @@
 // Description: A group of functions relating to CAN DBC files.
 //
 // Created: 23.07.19
-// Updated: 23.07.27
+// Updated: 23.08.28
 //
 // To do:
 // - Scale factor and offset are ignored, they need to be used eventually
 // - Document DBC Keywords and line formats
 // - Message and signal arrays need reallocated when this is done parsing, otherwise memory is being wasted.
+// - Use C-style file interpretation, slightly more optimal
 //
 // References:
 // - http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf
@@ -23,18 +24,13 @@
 // Includes
 #include "can_socket.h"
 
-// C++ Standard Libraries
-#include <string>
-#include <vector>
-
 namespace Network
 {
     namespace CanDbc
     {
         // Compilation Flags --------------------------------------------------------------------------------------------------
 
-        // #define DEBUG_GENERAL
-        // #define DEBUG_ENTRY_INTERPRET
+        // #define LOG_ENTRY_PARSING
 
         // Constants ----------------------------------------------------------------------------------------------------------
 

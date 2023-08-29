@@ -8,14 +8,13 @@
 // Description: An interface for CAN devices based on the Linux SocketCAN implementation.
 //
 // Created: 23.07.08
-// Updated: 23.08.07
+// Updated: 23.08.28
 //
 // To do:
-// - The parse function needs to account for offset and scale factor. This is kinda weird, how do bools and chars get treated?
+// - The encode function needs to account for offset and scale factor. This is kinda weird, how do bools and chars get treated?
 // - Consider a static size for message and signal names.
 // - Implement signal endianness, not sure how this works in CAN yet
 // - The reallocate message function should be moved, not sure where yet
-// - Encode and decode make more sense than parse, minor issue though
 //
 // References:
 // - https://www.kernel.org/doc/html/latest/networking/can.html
@@ -34,27 +33,16 @@
 // C Standard Libraries
 #include <stdint.h>
 
-// C++ Standard Libraries
-#include <vector>
-#include <string>
-
 // Network Namespace ----------------------------------------------------------------------------------------------------------
 
 namespace Network
 {
-    // Compilation Flags ------------------------------------------------------------------------------------------------------
-
-    #define DEBUG_GENERAL
-    // #define DEBUG_TRAFFIC
-    // #define DEBUG_PARSE
-    #define DEBUG_DATATYPE_WARNING
-
     // Constants --------------------------------------------------------------------------------------------------------------
 
-    #define ID_DATATYPE_UINT   0
-    #define ID_DATATYPE_INT    1
-    #define ID_DATATYPE_BOOL   2
-    #define ID_DATATYPE_DOUBLE 3
+    #define ID_DATATYPE_UINT   0         // Unsigned integer
+    #define ID_DATATYPE_INT    1         // Signed integer
+    #define ID_DATATYPE_BOOL   2         // Boolean
+    #define ID_DATATYPE_DOUBLE 3         // Double-precision float
 
     // Structures -------------------------------------------------------------------------------------------------------------
 
@@ -113,13 +101,13 @@ namespace Network
         // - Will write the message parameters to the provided variables
         void readMessage(uint64_t* data, uint8_t* dataLength, uint16_t* id);
 
-        // Parse Signal
+        // Decode Signal
         // - Call to get the value of a signal from a CAN message's data
-        // - Returns the parsed datatype
-        static uint64_t parseUnsignedInt(const uint64_t& data, const CanSignal& signal);
-        static int64_t  parseSignedInt(const uint64_t& data, const CanSignal& signal);
-        static double   parseDouble(const uint64_t& data, const CanSignal& signal);
-        static bool     parseBool(const uint64_t& data, const CanSignal& signal);
+        // - Returns the decoded datatype
+        static uint64_t decodeUnsignedInt(const uint64_t& data, const CanSignal& signal);
+        static int64_t  decodeSignedInt(const uint64_t& data, const CanSignal& signal);
+        static double   decodeDouble(const uint64_t& data, const CanSignal& signal);
+        static bool     decodeBool(const uint64_t& data, const CanSignal& signal);
 
         // Encode Signal
         // - Call to get the message data encoding the given signal value
@@ -132,7 +120,8 @@ namespace Network
         // Reallocate Messages
         // - Call to reallocate the signal and message arrays, maintaining internal references
         // - Accepts a pointer to a CAN signal array and a pointer to a CAN message array, the array's of which are replaced
-        // - Can only shrink a set of messages, will throw a standard exception if an attempt is made to grow a set
+        // - Currently can only shrink a set of messages, will throw a standard exception if an attempt is made to grow a set
+        // - Can only be used on two dynamically allocated arrays
         static void reallocateMessages(CanSignal** signalArray, CanMessage** messageArray, size_t oldSignalCount, size_t newSignalCount, size_t oldMessageCount, size_t newMessageCount);
     };
 }

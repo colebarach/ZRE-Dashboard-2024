@@ -18,7 +18,6 @@
 #include <string>
 #include <exception>
 #include <stdexcept>
-#include <iostream>
 
 MainWindow::MainWindow(Network::Database* database, QWidget* parent) : QMainWindow(parent)
 {

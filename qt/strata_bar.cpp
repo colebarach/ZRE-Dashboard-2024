@@ -9,7 +9,6 @@
 // C++ Standard Libraries
 #include <exception>
 #include <stdexcept>
-#include <iostream>
 
 StrataBar::StrataBar(QWidget* parent, int minimum_, int maximum_) : QWidget(parent)
 {

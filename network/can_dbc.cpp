@@ -1,10 +1,12 @@
 // Header
 #include "can_dbc.h"
 
+// Includes
+#include "log.h"
+
 // C++ Standard Libraries
 #include <fstream>
-#include <iostream>
-#include <iomanip>
+#include <string>
 
 // C Standard Libraries
 #include <string.h>
@@ -13,10 +15,8 @@ namespace Network
 {
     void CanDbc::parseFile(const char* filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount)
     {
-        #ifdef DEBUG_GENERAL
-        std::cout << "Loading dbc file \"" << filePath << "\"..." << std::endl;
-        #endif
-        
+        LOG_INFO("Loading DBC file '%s'...\n", filePath);
+
         // Open file for reading
         std::ifstream file(filePath, std::ios_base::in);
         std::string data;
@@ -46,6 +46,7 @@ namespace Network
             {
                 if(*messageCount == MAX_SIZE_MESSAGE_ARRAY)
                 {
+                    LOG_ERROR("Failed to parse DBC file: The file exceeds the maximum number of messages (%i).\n", MAX_SIZE_MESSAGE_ARRAY);
                     throw std::runtime_error("Failed to parse DBC file: The file exceeds the maximum number of messages (" + std::to_string(MAX_SIZE_MESSAGE_ARRAY) + ").");
                 }
 
@@ -64,6 +65,7 @@ namespace Network
                 file >> data;
                 if(data.size() == 0)
                 {
+                    LOG_ERROR("Failed to parse DBC file: Read empty message name.\n");
                     throw std::runtime_error("Failed to parse DBC file: Read empty message name.");
                 }
                 message->name = new char[data.size() + 1];
@@ -79,11 +81,13 @@ namespace Network
             {
                 if(message == nullptr)
                 {
+                    LOG_ERROR("Failed to parse DBC file: Read a signal before reading the first message.\n");
                     throw std::runtime_error("Failed to parse DBC file: Read a signal before reading the first message.");
                 }
 
                 if(*signalCount == MAX_SIZE_SIGNAL_ARRAY)
                 {
+                    LOG_ERROR("Failed to parse DBC file: The file exceeds the maximum number of signals (%i).\n", MAX_SIZE_SIGNAL_ARRAY);
                     throw std::runtime_error("Failed to parse DBC file: The file exceeds the maximum number of signals (" + std::to_string(MAX_SIZE_SIGNAL_ARRAY) + ").");
                 }
 
@@ -107,38 +111,44 @@ namespace Network
                 size_t bitLenEnd   = data.find('@');               // Bit len ends at '@'
                 size_t signStart   = bitLenEnd + 1;                // Sign starts after bit len
                 size_t signEnd     = data.find('(') - 1;           // Sign ends before '(', +1 for space
-                // size_t scaleStart  = signEnd + 2;                  // Scale starts after '('
-                // size_t scaleEnd    = data.find(',');               // Scale ends at ','
-                // size_t offsetStart = scaleEnd + 1;                 // Offset starts after ','
-                // size_t offsetEnd   = data.find(')');               // Offset ends at ')'
-                // size_t minStart    = offsetEnd + 3;                // Min starts 3 characters after offset
-                // size_t minEnd      = data.find('|', minStart);     // Min ends with '|', second instance of this in data
-                // size_t maxStart    = minEnd + 1;                   // Max starts after '|', +1 char
-                // size_t maxEnd      = data.find(']');               // Max ends with ']'
-                // size_t unitStart   = data.find('"')+1;             // Unit starts with '""
-                // size_t unitEnd     = data.find('"', unitStart);    // Unit ends with second instance of '"'
-                // size_t ecuStart    = unitEnd + 3;                  // ECU starts after unit, +3 for '"' and 2 spaces
-                // size_t ecuEnd      = data.length()-1;              // ECU ends with line
 
-                #ifdef DEBUG_ENTRY_INTERPRET
-                std::cout << "SIGNAL PARTITION: "
-                << " NAME = '"    << data.substr(nameStart,   nameEnd   - nameStart)   << "'"
-                << " BIT POS = '" << data.substr(bitPosStart, bitPosEnd - bitPosStart) << "'"
-                << " BIT LEN = '" << data.substr(bitLenStart, bitLenEnd - bitLenStart) << "'"
-                << " SIGN = '"    << data.substr(signStart,   signEnd   - signStart)   << "'"
-                << " SCALE = '"   << data.substr(scaleStart,  scaleEnd  - scaleStart)  << "'"
-                << " OFFSET = '"  << data.substr(offsetStart, offsetEnd - offsetStart) << "'"
-                << " MIN = '"     << data.substr(minStart,    minEnd    - minStart)    << "'"
-                << " MAX = '"     << data.substr(maxStart,    maxEnd    - maxStart)    << "'"
-                << " UNIT = '"    << data.substr(unitStart,   unitEnd   - unitStart)   << "'"
-                << " ECU = '"     << data.substr(ecuStart,    ecuEnd    - ecuStart)    << "'" << std::endl;
-                #endif
+                #ifdef LOG_ENTRY_PARSING
+
+                size_t scaleStart  = signEnd + 2;                  // Scale starts after '('
+                size_t scaleEnd    = data.find(',');               // Scale ends at ','
+                size_t offsetStart = scaleEnd + 1;                 // Offset starts after ','
+                size_t offsetEnd   = data.find(')');               // Offset ends at ')'
+                size_t minStart    = offsetEnd + 3;                // Min starts 3 characters after offset
+                size_t minEnd      = data.find('|', minStart);     // Min ends with '|', second instance of this in data
+                size_t maxStart    = minEnd + 1;                   // Max starts after '|', +1 char
+                size_t maxEnd      = data.find(']');               // Max ends with ']'
+                size_t unitStart   = data.find('"')+1;             // Unit starts with '""
+                size_t unitEnd     = data.find('"', unitStart);    // Unit ends with second instance of '"'
+                size_t ecuStart    = unitEnd + 3;                  // ECU starts after unit, +3 for '"' and 2 spaces
+                size_t ecuEnd      = data.length()-1;              // ECU ends with line
+                
+                std::string debugSignalName  = data.substr(nameStart,   nameEnd   - nameStart);
+                std::string debugBitPosition = data.substr(bitPosStart, bitPosEnd - bitPosStart);
+                std::string debugBitLength   = data.substr(bitLenStart, bitLenEnd - bitLenStart);
+                std::string debugSign        = data.substr(signStart,   signEnd   - signStart);
+                std::string debugScale       = data.substr(scaleStart,  scaleEnd  - scaleStart);
+                std::string debugOffset      = data.substr(offsetStart, offsetEnd - offsetStart);
+                std::string debugMin         = data.substr(minStart,    minEnd    - minStart);
+                std::string debugMax         = data.substr(maxStart,    maxEnd    - maxStart);
+                std::string debugUnit        = data.substr(unitStart,   unitEnd   - unitStart);
+                std::string debugEcu         = data.substr(ecuStart,    ecuEnd    - ecuStart);
+
+                LOG_INFO("Signal Partitioning: Name '%s', Bit Position '%s', Bit Length '%s', Is signed '%s', Scale Factor '%s', Offset '%s', Minimum '%s', Maximum '%s', Units '%s', ECU Name '%s'.\n",
+                debugSignalName.c_str(), debugBitPosition.c_str(), debugBitLength.c_str(), debugSign.c_str(), debugScale.c_str(), debugOffset.c_str(), debugMin.c_str(), debugMax.c_str(), debugUnit.c_str(), debugEcu.c_str());
+                
+                #endif // LOG_ENTRY_PARSING
 
                 // Read name
                 std::string signalName = data.substr(nameStart, nameEnd - nameStart);
                 signal->name = new char[signalName.size() + 1];
                 if(signalName.size() == 0)
                 {
+                    LOG_ERROR("Failed to parse DBC file: Read empty signal name.\n");
                     throw std::runtime_error("Failed to parse DBC file: Read empty signal name.");
                 }
                 strcpy(signal->name, signalName.c_str());
@@ -210,14 +220,11 @@ namespace Network
             }
             else
             {
-                #ifdef DEBUG_GENERAL
-                std::cout << "Unknown keyword \"" << data << "\". Ignoring..." << std::endl;
-                #endif
+                LOG_WARN("Unknown keyword '%s'. Ignoring...\n", data.c_str());
             }
         }
 
-        #ifdef DEBUG_GENERAL
-        std::cout << "Loaded." << std::endl;
-        #endif
+        // Shrink the arrays to save memory, not necessary but should be done
+        CanSocket::reallocateMessages(signals, messages, MAX_SIZE_SIGNAL_ARRAY, *signalCount, MAX_SIZE_MESSAGE_ARRAY, *messageCount);
     }
 }

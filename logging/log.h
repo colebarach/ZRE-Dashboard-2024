@@ -3,7 +3,10 @@
 
 // Log ------------------------------------------------------------------------------------------------------------------------
 // 
-// Description: Collection of logging tags
+// Description: Collection of logging macros, used to standardize output across a project.
+//
+// Created: 23.08.28
+// Updated: 23.08.28
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 

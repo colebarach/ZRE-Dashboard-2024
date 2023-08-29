@@ -1,10 +1,8 @@
 #include "database.h"
 
 // C++ Standard Libraries
-#include <string>
 #include <exception>
 #include <stdexcept>
-#include <iostream>
 
 // C Standard Libraries
 #include "string.h"

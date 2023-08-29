@@ -27,9 +27,6 @@
 // C Standard Libraries
 #include "stddef.h"
 
-// C++ Standard Libraries
-#include <string>
-
 // Network Namespace ----------------------------------------------------------------------------------------------------------
 
 namespace Network
@@ -73,25 +70,30 @@ namespace Network
         // Get Reference
         // - This function should be used for repeated access to a single entry. If a get call needs to happen more than once,
         //   a reference should be used instead of get.
-        // - Call to get a pointer to an entry
-        // - Use the type to identify the datatype
-        // - Throws a standard exception if the entry does not exist
+        // - Call to get a pointer to an entry.
+        // - Use the type to identify the datatype.
+        // - Throws a standard exception if the entry does not exist.
         template<typename T>
         T* reference(const char* key) const;
 
         // Get Value
+        // - Call to get the value of an entry.
+        // - Should only be used if access is needed once or twice, otherwise a reference should be used.
         template<typename T>
         T get(const char* key) const;
 
         // Set Value
+        // - Call to set the value of an entry in the database.
+        // - This should only be used if this class is not derived. A derived class may require a different interface.
+        // - Should only be used if access is needed once or twice, otherwise a reference should be used.
         template<typename T>
         void set(const char* key, const T& data);
         
         // Insert Data
-        // - Call to insert an entry into the database
-        // - Inserts a copy of the data into the database
-        // - Can only be used for primative objects
-        // - Will throw a standard exception if insertion fails
+        // - Call to insert an entry into the database.
+        // - Inserts a copy of the data into the database.
+        // - Can only be used for primative objects.
+        // - Will throw a standard exception if insertion fails.
         template<typename T>
         void insert(const T& data, const char* key);
 
@@ -117,18 +119,18 @@ namespace Network
         // Protected Functions ------------------------------------------------------------------------------------------------
 
         // Find Index
-        // - Use to get the index of a specified key
-        // - Returns the index if it exists
-        // - Throws a standard exception if the key does not exist
+        // - Use to get the index of a specified key.
+        // - Returns the index if it exists.
+        // - Throws a standard exception if the key does not exist.
         size_t find(const char* key) const;
 
         // Get Value
-        // - Use to get the value of an entry using its index
+        // - Use to get the value of an entry using its index.
         template<typename T>
         T get(size_t index) const;
 
         // Set Value
-        // - Use to set the value of an entry using its index
+        // - Use to set the value of an entry using its index.
         template<typename T>
         void set(size_t index, const T& data);
     };

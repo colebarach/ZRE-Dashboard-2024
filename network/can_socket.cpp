@@ -1,9 +1,8 @@
 // Header
 #include "can_socket.h"
 
-// C++ Libraries
-#include <string>
-#include <iostream>
+// Includes
+#include "log.h"
 
 // C Standard Libraries
 #include <errno.h>
@@ -24,15 +23,14 @@ namespace Network
 {
     CanSocket::CanSocket(const char* deviceName)
     {
-        #ifdef DEBUG_GENERAL
-        std::cout << "Creating CAN socket bound to device \"" << deviceName << "\"... ";
-        #endif
+        LOG_INFO("Creating CAN socket bound to device '%s'...\n", deviceName);
 
         // Create the socket using the CAN protocol family and the raw CAN protol
         this->descriptor = socket(PF_CAN, SOCK_RAW, CAN_RAW);
         if(this->descriptor == -1)
         {
             this->errorCode = errno;
+            LOG_ERROR("Failed to create CAN socket for device '%s': %s\n", deviceName, strerror(this->errorCode));
             throw std::runtime_error(std::string("Failed to create CAN socket for interface \"") + deviceName + "\": " + strerror(this->errorCode));
         }
 
@@ -48,6 +46,7 @@ namespace Network
         if(this->errorCode == -1)
         {
             this->errorCode = errno;
+            LOG_ERROR("Failed to get index of CAN device '%s': %s\n", deviceName, strerror(this->errorCode));
             throw std::runtime_error(std::string("Failed to get index of CAN interface \"") + deviceName + "\": " + std::string(strerror(this->errorCode)));
         }
 
@@ -63,22 +62,21 @@ namespace Network
         if(this->errorCode == -1)
         {
             this->errorCode = errno;
-            throw std::runtime_error(std::string("Failed bind CAN socket at interface \"") + deviceName + "\" to index \"" + std::to_string(interface.ifr_ifindex) + "\": " + std::string(strerror(this->errorCode)));
+            LOG_ERROR("Failed to bind CAN socket '%s' to index %i: %s\n", deviceName, interface.ifr_ifindex, strerror(this->errorCode));
+            throw std::runtime_error(std::string("Failed bind CAN socket '") + deviceName + "' to index " + std::to_string(interface.ifr_ifindex) + ": " + std::string(strerror(this->errorCode)));
         }
 
-        #ifdef DEBUG_GENERAL
-        std::cout << "Socket created." << std::endl;
-        #endif
+        LOG_INFO("CAN socket created.\n");
     }
 
     void CanSocket::sendMessage(const uint64_t* data, const uint8_t* dataLength, const uint16_t* id)
     {
-        #ifdef DEBUG_TRAFFIC
-        std::cout << "Sending CAN message: { ID: " << *id << ", Length: " << *dataLength << ", Data: " << std::hex << *data << std::dec << "} ";
-        #endif
-
         // Validate data count
-        if(*dataLength > 8U) throw std::invalid_argument("Failed to send message: Data length cannot be greater than 8 bytes.");
+        if(*dataLength > 8U)
+        {
+            LOG_ERROR("Failed to send message: Data length cannot be greater than 8 bytes.\n");
+            throw std::invalid_argument("Failed to send message: Data length cannot be greater than 8 bytes.\n");
+        }
 
         // Allocate message frame
         struct can_frame messageFrame =
@@ -105,20 +103,13 @@ namespace Network
                 throw Timeout();
             }
             
+            LOG_ERROR("Failed to send CAN message: %s\n", strerror(this->errorCode));
             throw std::runtime_error("Failed to send CAN message: " + std::string(strerror(this->errorCode)));
         }
-
-        #ifdef DEBUG_TRAFFIC
-        std::cout << "Sent." << std::endl;
-        #endif
     }
 
     void CanSocket::readMessage(uint64_t* data, uint8_t* dataLength, uint16_t* id)
     {
-        #ifdef DEBUG_TRAFFIC
-        std::cout << "Reading CAN message... ";
-        #endif
-
         // Allocate message frame
         struct can_frame messageFrame;
 
@@ -135,6 +126,7 @@ namespace Network
                 throw Timeout();
             }
 
+            LOG_ERROR("Failed to read CAN message: %s\n", strerror(this->errorCode));
             throw std::runtime_error("Failed to read CAN message: " + std::string(strerror(this->errorCode)));
         }
 
@@ -143,7 +135,11 @@ namespace Network
         *dataLength = static_cast<uint8_t>(messageFrame.len);
 
         // Validate data count
-        if(*dataLength > 8) throw std::runtime_error("Failed to read CAN message: Invalid data count.");
+        if(*dataLength > 8)
+        {
+            LOG_ERROR("Failed to read CAN message: Invalid data count.\n");
+            throw std::runtime_error("Failed to read CAN message: Invalid data count.");
+        }
 
         // Copy message data
         *data = 0;
@@ -151,246 +147,182 @@ namespace Network
         {
             *data |= static_cast<uint64_t>(messageFrame.data[index]) << (index * 8);
         }
-
-        #ifdef DEBUG_TRAFFIC
-        std::cout << "Read CAN message: { ID: " << *id << ", Length: " << *dataLength << ", Data: " << std::hex << *data << std::dec << "}" << std::endl;
-        #endif
     }
 
-    uint64_t CanSocket::parseUnsignedInt(const uint64_t& data, const CanSignal& signal)
+    uint64_t CanSocket::decodeUnsignedInt(const uint64_t& data, const CanSignal& signal)
     {
-        #ifdef DEBUG_PARSE
-        std::cout << "Parsing signal \"" << signal.name << "\"... ";
-        #endif
-
-        #ifdef DEBUG_DATATYPE_WARNING
         switch(signal.datatypeId)
         {
-            case ID_DATATYPE_UINT:
-                break;
-            case ID_DATATYPE_INT:
-                std::cout << "Warning: Interpreting integer signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
-            case ID_DATATYPE_DOUBLE:
-                std::cout << "Warning: Interpreting double signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
-            case ID_DATATYPE_BOOL:
-                std::cout << "Warning: Interpreting boolean signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
-            default:
-                std::cout << "Warning: Interpreting unknown signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
+        case ID_DATATYPE_UINT:
+            break;
+        case ID_DATATYPE_INT:
+            LOG_WARN("Decoding integer signal '%s' as unsigned integer.\n", signal.name);
+            break;
+        case ID_DATATYPE_DOUBLE:
+            LOG_WARN("Decoding double signal '%s' as unsigned integer.\n", signal.name);
+            break;
+        case ID_DATATYPE_BOOL:
+            LOG_WARN("Decoding boolean signal '%s' as unsigned integer.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Decoding unknown signal '%s' as unsigned integer.\n", signal.name);
+            break;
         }
-        #endif
-
+        
+        // TODO: This needs fixed
         uint64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
-        // dataBuffer = static_cast<double>(dataBuffer) * signal.scaleFactor + signal.offset; // TODO: Scale offset
-
-        #ifdef DEBUG_PARSE
-        std::cout << "Parsed " << dataBuffer << "." << std::endl;
-        #endif
+        // dataBuffer = static_cast<double>(dataBuffer) * signal.scaleFactor + signal.offset;
 
         return dataBuffer;
     }
 
-    int64_t CanSocket::parseSignedInt(const uint64_t& data, const CanSignal& signal)
+    int64_t CanSocket::decodeSignedInt(const uint64_t& data, const CanSignal& signal)
     {
-        #ifdef DEBUG_PARSE
-        std::cout << "Parsing signal \"" << signal.name << "\"... ";
-        #endif
-
-        #ifdef DEBUG_DATATYPE_WARNING
         switch(signal.datatypeId)
         {
-            case ID_DATATYPE_INT:
-                break;
-            case ID_DATATYPE_UINT:
-                std::cout << "Warning: Interpreting unsigned integer signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
-            case ID_DATATYPE_DOUBLE:
-                std::cout << "Warning: Interpreting double signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
-            case ID_DATATYPE_BOOL:
-                std::cout << "Warning: Interpreting boolean signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
-            default:
-                std::cout << "Warning: Interpreting unknown signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
+        case ID_DATATYPE_INT:
+            break;
+        case ID_DATATYPE_UINT:
+            LOG_WARN("Decoding unsigned integer signal '%s' as integer.\n", signal.name);
+            break;
+        case ID_DATATYPE_DOUBLE:
+            LOG_WARN("Decoding double signal '%s' as integer.\n", signal.name);
+            break;
+        case ID_DATATYPE_BOOL:
+            LOG_WARN("Decoding boolean signal '%s' as integer.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Decoding unknown signal '%s' as integer.\n", signal.name);
+            break;
         }
-        #endif
-
+        
         int64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
         // dataBuffer = static_cast<double>(dataBuffer) * signal.scaleFactor + signal.offset; // TODO: OFFSET AND SCALE ARE IGNORED
 
-        #ifdef DEBUG_PARSE
-        std::cout << "Parsed " << dataBuffer << "." << std::endl;
-        #endif
-
         return dataBuffer;
     }
 
-    double CanSocket::parseDouble(const uint64_t& data, const CanSignal& signal)
+    double CanSocket::decodeDouble(const uint64_t& data, const CanSignal& signal)
     {
-        std::cout << "WARNING: Parsing doubles is not implemented!!!" << std::endl;
+        LOG_WARN("Decoding doubles is not implemented!!!\n");
         return 0;
     }
 
-    bool CanSocket::parseBool(const uint64_t& data, const CanSignal& signal)
+    bool CanSocket::decodeBool(const uint64_t& data, const CanSignal& signal)
     {
-        #ifdef DEBUG_PARSE
-        std::cout << "Parsing signal \"" << signal.name << "\"... ";
-        #endif
-
-        #ifdef DEBUG_DATATYPE_WARNING
         switch(signal.datatypeId)
         {
-            case ID_DATATYPE_BOOL:
-                break;
-            case ID_DATATYPE_UINT:
-                std::cout << "Warning: Interpreting unsigned integer signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
-            case ID_DATATYPE_INT:
-                std::cout << "Warning: Interpreting integer signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
-            case ID_DATATYPE_DOUBLE:
-                std::cout << "Warning: Interpreting double signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
-            default:
-                std::cout << "Warning: Interpreting unknown signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
+        case ID_DATATYPE_BOOL:
+            break;
+        case ID_DATATYPE_UINT:
+            LOG_WARN("Decoding unsigned integer signal '%s' as boolean.\n", signal.name);
+            break;
+        case ID_DATATYPE_INT:
+            LOG_WARN("Decoding integer signal '%s' as boolean.\n", signal.name);
+            break;
+        case ID_DATATYPE_DOUBLE:
+            LOG_WARN("Decoding double signal '%s' as boolean.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Decoding unknown signal '%s' as boolean.\n", signal.name);
+            break;
         }
-        #endif
-
+        
         uint64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
-
-        #ifdef DEBUG_PARSE
-        std::cout << "Parsed " << (dataBuffer == 1) << "." << std::endl;
-        #endif
 
         return dataBuffer == 1;
     }
 
     uint64_t CanSocket::encodeUnsignedInt(const uint64_t& data, const CanSignal& signal)
     {
-        #ifdef DEBUG_PARSE
-        std::cout << "Encoding signal \"" << signal.name << "\": " << data << "... ";
-        #endif
-
-        #ifdef DEBUG_DATATYPE_WARNING
         switch(signal.datatypeId)
         {
-            case ID_DATATYPE_UINT:
-                break;
-            case ID_DATATYPE_INT:
-                std::cout << "Warning: Encoding integer signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
-            case ID_DATATYPE_DOUBLE:
-                std::cout << "Warning: Encoding double signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
-            case ID_DATATYPE_BOOL:
-                std::cout << "Warning: Encoding boolean signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
-            default:
-                std::cout << "Warning: Encoding unknown signal \"" << signal.name << "\" as unsigned integer." << std::endl;
-                break;
+        case ID_DATATYPE_UINT:
+            break;
+        case ID_DATATYPE_BOOL:
+            LOG_WARN("Encoding boolean signal '%s' as unsigned int.\n", signal.name);
+            break;
+        case ID_DATATYPE_INT:
+            LOG_WARN("Encoding integer signal '%s' as unsigned int.\n", signal.name);
+            break;
+        case ID_DATATYPE_DOUBLE:
+            LOG_WARN("Encoding double signal '%s' as unsigned int.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Encoding unknown signal '%s' as unsigned int.\n", signal.name);
+            break;
         }
-        #endif
-
+        
         // TODO: Scale offset
         uint64_t dataBuffer = (data & signal.bitMask) << signal.bitPosition;
-
-        #ifdef DEBUG_PARSE
-        std::cout << "Encoded " << dataBuffer << "." << std::endl;
-        #endif
 
         return dataBuffer;
     }
 
     uint64_t CanSocket::encodeSignedInt(const int64_t& data, const CanSignal& signal)
     {
-        #ifdef DEBUG_PARSE
-        std::cout << "Encoding signal \"" << signal.name << "\": " << data << "... ";
-        #endif
-
-        #ifdef DEBUG_DATATYPE_WARNING
         switch(signal.datatypeId)
         {
-            case ID_DATATYPE_INT:
-                break;
-            case ID_DATATYPE_UINT:
-                std::cout << "Warning: Encoding unsigned integer signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
-            case ID_DATATYPE_DOUBLE:
-                std::cout << "Warning: Encoding double signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
-            case ID_DATATYPE_BOOL:
-                std::cout << "Warning: Encoding boolean signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
-            default:
-                std::cout << "Warning: Encoding unknown signal \"" << signal.name << "\" as integer." << std::endl;
-                break;
+        case ID_DATATYPE_INT:
+            break;
+        case ID_DATATYPE_UINT:
+            LOG_WARN("Encoding unsigned integer signal '%s' as integer.\n", signal.name);
+            break;
+        case ID_DATATYPE_BOOL:
+            LOG_WARN("Encoding boolean signal '%s' as integer.\n", signal.name);
+            break;
+        case ID_DATATYPE_DOUBLE:
+            LOG_WARN("Encoding double signal '%s' as integer.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Encoding unknown signal '%s' as integer.\n", signal.name);
+            break;
         }
-        #endif
 
         uint64_t dataBuffer = (data & signal.bitMask) << signal.bitPosition;
-        
-        #ifdef DEBUG_PARSE
-        std::cout << "Encoded " << dataBuffer << "." << std::endl;
-        #endif
 
         return dataBuffer;
     }
 
     uint64_t CanSocket::encodeDouble(const double& data, const CanSignal& signal)
     {
-        std::cout << "WARNING: Encoding doubles is not implemented!!!" << std::endl;
+        LOG_WARN("Encoding doubles is not implemented!!!\n");
         return 0;
     }
 
     uint64_t CanSocket::encodeBool(const bool& data, const CanSignal& signal)
     {
-        #ifdef DEBUG_PARSE
-        std::cout << "Encoding signal \"" << signal.name << "\": " << data << "... ";
-        #endif
-
-        #ifdef DEBUG_DATATYPE_WARNING
         switch(signal.datatypeId)
         {
-            case ID_DATATYPE_BOOL:
-                break;
-            case ID_DATATYPE_UINT:
-                std::cout << "Warning: Encoding unsigned integer signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
-            case ID_DATATYPE_INT:
-                std::cout << "Warning: Encoding integer signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
-            case ID_DATATYPE_DOUBLE:
-                std::cout << "Warning: Encoding double signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
-            default:
-                std::cout << "Warning: Encoding unknown signal \"" << signal.name << "\" as boolean." << std::endl;
-                break;
+        case ID_DATATYPE_BOOL:
+            break;
+        case ID_DATATYPE_INT:
+            LOG_WARN("Encoding integer signal '%s' as boolean.\n", signal.name);
+            break;
+        case ID_DATATYPE_UINT:
+            LOG_WARN("Encoding unsigned integer signal '%s' as boolean.\n", signal.name);
+            break;
+        case ID_DATATYPE_DOUBLE:
+            LOG_WARN("Encoding double signal '%s' as boolean.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Encoding unknown signal '%s' as boolean.\n", signal.name);
+            break;
         }
-        #endif
 
         uint64_t dataBuffer = (data & signal.bitMask) << signal.bitPosition;
-
-        #ifdef DEBUG_PARSE
-        std::cout << "Encoded " << dataBuffer << "." << std::endl;
-        #endif
 
         return dataBuffer;
     }
 
     void CanSocket::reallocateMessages(CanSignal** signalArray, CanMessage** messageArray, size_t oldSignalCount, size_t newSignalCount, size_t oldMessageCount, size_t newMessageCount)
     {
-        #ifdef DEBUG_GENERAL
-        std::cout << "Reallocating messages. Signal count: " << oldSignalCount << " => " << newSignalCount << ", Message count: " << oldMessageCount << " => " << newMessageCount << "... ";
-        #endif
+        LOG_INFO("Reallocating messages. Signal count: %lu => %lu, Message count: %lu => %lu...\n", oldSignalCount, newSignalCount, oldMessageCount, newMessageCount);
 
         // Validate parameters
         if(newSignalCount >= oldSignalCount || newMessageCount >= oldMessageCount)
         {
+            LOG_ERROR("Failed to reallocate CAN message array: The new size must be less than the old size.\n");
             throw std::runtime_error("Failed to reallocate CAN message array: The new size must be less than the old size.");
         }
 
@@ -414,9 +346,12 @@ namespace Network
             newSignalArray[index].messageArray = newMessageArray;
             newSignalArray[index].messageIndex = (*signalArray)[index].messageIndex;
             newSignalArray[index].name         = (*signalArray)[index].name;
+            newSignalArray[index].datatypeId   = (*signalArray)[index].datatypeId;
             newSignalArray[index].bitPosition  = (*signalArray)[index].bitPosition;
             newSignalArray[index].bitLength    = (*signalArray)[index].bitLength;
             newSignalArray[index].bitMask      = (*signalArray)[index].bitMask;
+            newSignalArray[index].scaleFactor  = (*signalArray)[index].scaleFactor;
+            newSignalArray[index].offset       = (*signalArray)[index].offset;
             newSignalArray[index].isSigned     = (*signalArray)[index].isSigned;
         }
 
@@ -427,9 +362,5 @@ namespace Network
         // Update references
         *signalArray  = newSignalArray;
         *messageArray = newMessageArray;
-
-        #ifdef DEBUG_GENERAL
-        std::cout << "Reallocated." << std::endl;
-        #endif
     }
 }

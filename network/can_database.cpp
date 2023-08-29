@@ -4,9 +4,6 @@
 // Includes
 #include "log.h"
 
-#include <iostream>
-#include <iomanip>
-
 // C Standard Libraries
 #include <string.h>
 #include <errno.h>
@@ -166,22 +163,22 @@ namespace Network
 
                         if(signal.datatypeId == ID_DATATYPE_UINT)
                         {
-                            unsigned int signalData = static_cast<unsigned int>(CanSocket::parseUnsignedInt(data, signal));
+                            unsigned int signalData = static_cast<unsigned int>(CanSocket::decodeUnsignedInt(data, signal));
                             database->set(signalIndex, signalData);
                         }
                         else if(signal.datatypeId == ID_DATATYPE_INT)
                         {
-                            int signalData = static_cast<int>(CanSocket::parseSignedInt(data, signal));
+                            int signalData = static_cast<int>(CanSocket::decodeSignedInt(data, signal));
                             database->set(signalIndex, signalData);
                         }
                         else if(signal.datatypeId == ID_DATATYPE_BOOL)
                         {
-                            bool signalData = CanSocket::parseBool(data, signal);
+                            bool signalData = CanSocket::decodeBool(data, signal);
                             database->set(signalIndex, signalData);
                         }
                         else if(signal.datatypeId == ID_DATATYPE_DOUBLE)
                         {
-                            double signalData = CanSocket::parseDouble(data, signal);
+                            double signalData = CanSocket::decodeDouble(data, signal);
                             database->set(signalIndex, signalData);
                         }
                     }

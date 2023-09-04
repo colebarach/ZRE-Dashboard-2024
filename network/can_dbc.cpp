@@ -7,6 +7,7 @@
 // C Standard Libraries
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 namespace Network
 {
@@ -174,7 +175,7 @@ namespace Network
                     signal->bitLength   = static_cast<uint16_t>(bitLength);
                     signal->scaleFactor = scaleFactor;
                     signal->offset      = offset;
-                    signal->signedness  = signedness == '+';
+                    signal->signedness  = signedness == '-';
 
                     // Populate bitmask
                     signal->bitMask = 0;
@@ -183,8 +184,35 @@ namespace Network
                         signal->bitMask |= (1 << index);
                     }
 
+                    // Determine if signal is floating point or not
+                    bool integerOffset      = (trunc(signal->offset)      == signal->offset);
+                    bool integerScaleFactor = (trunc(signal->scaleFactor) == signal->scaleFactor);
+
                     // Determine datatype ID
-                    signal->datatypeId = 0;
+                    if(integerOffset && integerScaleFactor)
+                    {
+                        // Integer
+                        if(signal->bitLength == 1)
+                        {
+                            // Boolean
+                            signal->datatypeId = ID_DATATYPE_BOOL;
+                        }
+                        else if(signal->signedness == true)
+                        {
+                            // Signed integer
+                            signal->datatypeId = ID_DATATYPE_INT;
+                        }
+                        else
+                        {
+                            // Unsigned integer
+                            signal->datatypeId = ID_DATATYPE_UINT;
+                        }
+                    }
+                    else
+                    {
+                        // Floating point
+                        signal->datatypeId = ID_DATATYPE_DOUBLE;
+                    }
                 }
             }
             else if(strcmp(dataBuffer, DBC_KEYWORD_ENV_VARIABLE) == 0)
@@ -259,6 +287,6 @@ namespace Network
         }
 
         // Shrink the arrays to save memory, not necessary but should be done
-        CanSocket::reallocateMessages(signals, messages, MAX_SIZE_SIGNAL_ARRAY, *signalCount, MAX_SIZE_MESSAGE_ARRAY, *messageCount);
+        reallocateMessages(signals, messages, MAX_SIZE_SIGNAL_ARRAY, *signalCount, MAX_SIZE_MESSAGE_ARRAY, *messageCount);
     }
 }

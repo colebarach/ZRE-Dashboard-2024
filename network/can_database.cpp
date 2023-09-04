@@ -122,7 +122,7 @@ namespace Network
         }
 
         // Send the message
-        uint8_t dataLength = 8; // TODO: Hard coded DLC of 8b
+        uint8_t dataLength = 8; // TODO: Hard coded DLC of 8B
         txInterface.sendMessage(&messageData, &dataLength, &message.id);
     }
 
@@ -234,7 +234,7 @@ namespace Network
     {
         int index = 0;
 
-        index = snprintf(buffer, bufferSize, "%32s | %7s | %8s | %10s | %12s | %4s | %12s | %8s\n\n", "Signal Name", "Value", "Bit Mask", "Bit Length", "Bit Position", "Type", "Scale Factor", "Offset");
+        index = snprintf(buffer, bufferSize, "%32s | %10s | %8s | %10s | %12s | %4s | %12s | %8s | %9s\n\n", "Signal Name", "Value", "Bit Mask", "Bit Length", "Bit Position", "Type", "Scale Factor", "Offset", "Is Signed");
         
         if(index <= 0)
         {
@@ -277,26 +277,26 @@ namespace Network
                 if(s.datatypeId == ID_DATATYPE_UINT)
                 {
                     unsigned int data = get<unsigned int>(sIndex);
-                    index = snprintf(buffer, bufferSize, "%32s | %7u | %8lX | %10i | %12i | %4i | %12f | %8f\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset);
+                    index = snprintf(buffer, bufferSize, "%32s | %10u | %8lX | %10i | %12i | %4i | %12f | %8f | %9u\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset, s.signedness);
                 }
                 else if(s.datatypeId == ID_DATATYPE_INT)
                 {
                     int data = get<int>(sIndex);
-                    index = snprintf(buffer, bufferSize, "%32s | %7i | %8lX | %10i | %12i | %4i | %12f | %8f\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset);
+                    index = snprintf(buffer, bufferSize, "%32s | %10i | %8lX | %10i | %12i | %4i | %12f | %8f | %9u\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset, s.signedness);
                 }
                 else if(s.datatypeId == ID_DATATYPE_BOOL)
                 {
                     unsigned int data = static_cast<unsigned int>(get<bool>(sIndex));
-                    index = snprintf(buffer, bufferSize, "%32s | %7u | %8lX | %10i | %12i | %4i | %12f | %8f\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset);
+                    index = snprintf(buffer, bufferSize, "%32s | %10u | %8lX | %10i | %12i | %4i | %12f | %8f | %9u\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset, s.signedness);
                 }
                 else if(s.datatypeId == ID_DATATYPE_DOUBLE)
                 {
                     double data = get<double>(sIndex);
-                    index = snprintf(buffer, bufferSize, "%32s | %7f | %8lX | %10i | %12i | %4i | %12f | %8f\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset);
+                    index = snprintf(buffer, bufferSize, "%32s | %10f | %8lX | %10i | %12i | %4i | %12f | %8f | %9u\n", s.name, data, s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset, s.signedness);
                 }
                 else
                 {
-                    index = snprintf(buffer, bufferSize, "%32s | %7s | %8lX | %10i | %12i | %4i | %12f | %8f\n", s.name, "--", s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset);
+                    index = snprintf(buffer, bufferSize, "%32s | %10s | %8lX | %10i | %12i | %4i | %12f | %8f | %9u\n", s.name, "--", s.bitMask, s.bitLength, s.bitPosition, s.datatypeId, s.scaleFactor, s.offset, s.signedness);
                 }
 
                 if(index <= 0)

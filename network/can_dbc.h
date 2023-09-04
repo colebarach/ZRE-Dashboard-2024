@@ -10,6 +10,9 @@
 // Created: 23.07.19
 // Updated: 23.09.04
 //
+// To do:
+// - Bitmask of size 32 is scaling weirdly, not sure why
+//
 // References:
 // - http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf
 // - https://www.csselectronics.com/pages/can-dbc-file-database-intro
@@ -26,7 +29,7 @@ namespace Network
     {
         // Compilation Flags --------------------------------------------------------------------------------------------------
 
-        #define LOG_ENTRY_PARSING     // Print the interpretation of the database to the standard output. Use for debugging.
+        // #define LOG_ENTRY_PARSING     // Print the interpretation of the database to the standard output. Use for debugging.
 
         // Constants ----------------------------------------------------------------------------------------------------------
 

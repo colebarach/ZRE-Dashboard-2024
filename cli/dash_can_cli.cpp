@@ -5,7 +5,7 @@
 // Description: A command-line tool for developing and testing the dashboard libraries.
 //
 // Created: 23.07.08
-// Updated: 23.08.07
+// Updated: 23.09.04
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -38,6 +38,10 @@ void printFormat();
 #define OPTION_STRING_TUTORIAL "tutorial"
 
 #define OPTION_CHAR_HELP 'h'
+
+// Constants ------------------------------------------------------------------------------------------------------------------
+
+#define SIZE_DATABASE_TABLE_BUFFER 16384
 
 // Entrypoint -----------------------------------------------------------------------------------------------------------------
 
@@ -148,11 +152,13 @@ void handleMenu(Network::CanDatabase& database, Network::CanSocket& rawSocket)
               << "  u - Read an unsigned integer" << std::endl
               << "  i - Read an integer"          << std::endl
               << "  b - Read a bool"              << std::endl
+              << "  d - Read a double"            << std::endl
               << "  n - Send an unsigned integer" << std::endl
               << "  j - Send an integer"          << std::endl
               << "  l - Send a bool"              << std::endl
+              << "  e - Send a double"            << std::endl
               << "  p - Print the database"       << std::endl
-              << "  n - Next menu"                << std::endl
+              << "  c - Next menu"                << std::endl
               << "  q - Quit"                     << std::endl;
     std::cin >> option;
 
@@ -183,6 +189,14 @@ void handleMenu(Network::CanDatabase& database, Network::CanSocket& rawSocket)
         std::cin >> key;
 
         std::cout << std::dec << "Read: " << database.get<bool>(key.c_str()) << std::endl;
+    }
+    else if(option == 'd')
+    {
+        std::string key;
+        std::cout << "Enter the key: ";
+        std::cin >> key;
+
+        std::cout << std::dec << "Read: " << database.get<double>(key.c_str()) << std::endl;
     }
     else if(option == 'n')
     {
@@ -220,12 +234,26 @@ void handleMenu(Network::CanDatabase& database, Network::CanSocket& rawSocket)
         database.send(key.c_str(), data);
         std::cout << "Sent." << std::endl;
     }
+    else if(option == 'e')
+    {
+        std::string key;
+        std::cout << "Enter the key: ";
+        std::cin >> key;
+        double data;
+        std::cout << "Enter the value: ";
+        std::cin >> data;
+
+        database.send(key.c_str(), data);
+        std::cout << "Sent." << std::endl;
+    }
     else if(option == 'p')
     {
         std::cout << "Database Table:" << std::endl;
-        // database.print(std::cout); // TODO: Reimplement
+        char tableBuffer[SIZE_DATABASE_TABLE_BUFFER];
+        database.print(tableBuffer, SIZE_DATABASE_TABLE_BUFFER);
+        std::cout << tableBuffer;
     }
-    else if(option == 'n')
+    else if(option == 'c')
     {
         handleExtendedMenu(database, rawSocket);
     }

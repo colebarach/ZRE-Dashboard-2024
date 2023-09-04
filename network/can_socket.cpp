@@ -151,6 +151,7 @@ namespace Network
 
     uint64_t CanSocket::decodeUnsignedInt(const uint64_t& data, const CanSignal& signal)
     {
+        // Validate datatype
         switch(signal.datatypeId)
         {
         case ID_DATATYPE_UINT:
@@ -170,8 +171,7 @@ namespace Network
         }
         
         uint64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
-        double floatBuffer = static_cast<double>(dataBuffer) * signal.scaleFactor + signal.offset;
-        LOG_INFO("Parsing: %f", floatBuffer);
+        dataBuffer = static_cast<uint64_t>(dataBuffer * signal.scaleFactor + signal.offset);
 
         return dataBuffer;
     }
@@ -197,15 +197,45 @@ namespace Network
         }
         
         int64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
-        // dataBuffer = static_cast<double>(dataBuffer) * signal.scaleFactor + signal.offset; // TODO: OFFSET AND SCALE ARE IGNORED
+        dataBuffer = static_cast<int64_t>(dataBuffer * signal.scaleFactor + signal.offset);
 
         return dataBuffer;
     }
 
     double CanSocket::decodeDouble(const uint64_t& data, const CanSignal& signal)
     {
-        LOG_WARN("Decoding doubles is not implemented!!!\n");
-        return 0;
+        switch(signal.datatypeId)
+        {
+        case ID_DATATYPE_DOUBLE:
+            break;
+        case ID_DATATYPE_UINT:
+            LOG_WARN("Decoding unsigned integer signal '%s' as double.\n", signal.name);
+            break;
+        case ID_DATATYPE_INT:
+            LOG_WARN("Decoding integer signal '%s' as double.\n", signal.name);
+            break;
+        case ID_DATATYPE_BOOL:
+            LOG_WARN("Decoding boolean signal '%s' as double.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Decoding unknown signal '%s' as double.\n", signal.name);
+            break;
+        }
+
+        double dataBuffer = 0;
+
+        if(signal.signedness)
+        {
+            int64_t intBuffer = (data >> signal.bitPosition) & signal.bitMask;
+            dataBuffer = intBuffer * signal.scaleFactor + signal.offset;
+        }
+        else
+        {
+            uint64_t intBuffer = (data >> signal.bitPosition) & signal.bitMask;
+            dataBuffer = intBuffer * signal.scaleFactor + signal.offset;
+        }
+
+        return dataBuffer;
     }
 
     bool CanSocket::decodeBool(const uint64_t& data, const CanSignal& signal)
@@ -253,10 +283,10 @@ namespace Network
             break;
         }
         
-        // TODO: Scale offset
-        uint64_t dataBuffer = (data & signal.bitMask) << signal.bitPosition;
-
-        return dataBuffer;
+        uint64_t dataBuffer = static_cast<uint64_t>((data - signal.offset) / signal.scaleFactor);
+        uint64_t bitBuffer = (dataBuffer & signal.bitMask) << signal.bitPosition;
+        
+        return bitBuffer;
     }
 
     uint64_t CanSocket::encodeSignedInt(const int64_t& data, const CanSignal& signal)
@@ -279,15 +309,47 @@ namespace Network
             break;
         }
 
-        uint64_t dataBuffer = (data & signal.bitMask) << signal.bitPosition;
-
-        return dataBuffer;
+        int64_t dataBuffer = static_cast<int64_t>((data - signal.offset) / signal.scaleFactor);
+        uint64_t bitBuffer = (dataBuffer & signal.bitMask) << signal.bitPosition;
+        
+        return bitBuffer;
     }
 
     uint64_t CanSocket::encodeDouble(const double& data, const CanSignal& signal)
     {
-        LOG_WARN("Encoding doubles is not implemented!!!\n");
-        return 0;
+        switch(signal.datatypeId)
+        {
+        case ID_DATATYPE_DOUBLE:
+            break;
+        case ID_DATATYPE_UINT:
+            LOG_WARN("Encoding unsigned integer signal '%s' as double.\n", signal.name);
+            break;
+        case ID_DATATYPE_INT:
+            LOG_WARN("Encoding integer signal '%s' as double.\n", signal.name);
+            break;
+        case ID_DATATYPE_BOOL:
+            LOG_WARN("Encoding boolean signal '%s' as double.\n", signal.name);
+            break;
+        default:
+            LOG_WARN("Encoding unknown signal '%s' as double.\n", signal.name);
+            break;
+        }
+
+        double dataBuffer = (data - signal.offset) / signal.scaleFactor;
+        uint64_t bitBuffer = 0;
+
+        if(signal.signedness)
+        {
+            int64_t intBuffer = static_cast<int64_t>(dataBuffer);
+            bitBuffer = (intBuffer & signal.bitMask) << signal.bitPosition;
+        }
+        else
+        {
+            uint64_t intBuffer = static_cast<uint64_t>(dataBuffer);
+            bitBuffer = (intBuffer & signal.bitMask) << signal.bitPosition;
+        }
+
+        return bitBuffer;
     }
 
     uint64_t CanSocket::encodeBool(const bool& data, const CanSignal& signal)
@@ -315,7 +377,7 @@ namespace Network
         return dataBuffer;
     }
 
-    void CanSocket::reallocateMessages(CanSignal** signalArray, CanMessage** messageArray, size_t oldSignalCount, size_t newSignalCount, size_t oldMessageCount, size_t newMessageCount)
+    void reallocateMessages(CanSignal** signalArray, CanMessage** messageArray, size_t oldSignalCount, size_t newSignalCount, size_t oldMessageCount, size_t newMessageCount)
     {
         LOG_INFO("Reallocating messages. Signal count: %lu => %lu, Message count: %lu => %lu...\n", oldSignalCount, newSignalCount, oldMessageCount, newMessageCount);
 

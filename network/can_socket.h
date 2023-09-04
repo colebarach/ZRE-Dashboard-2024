@@ -8,13 +8,11 @@
 // Description: An interface for CAN devices based on the Linux SocketCAN implementation.
 //
 // Created: 23.07.08
-// Updated: 23.08.28
+// Updated: 23.09.04
 //
 // To do:
-// - The encode function needs to account for offset and scale factor. This is kinda weird, how do bools and chars get treated?
-// - Consider a static size for message and signal names.
 // - Implement signal endianness, not sure how this works in CAN yet
-// - The reallocate message function should be moved, not sure where yet
+// - Sign extension needs done, not sure how and where yet
 //
 // References:
 // - https://www.kernel.org/doc/html/latest/networking/can.html
@@ -33,7 +31,7 @@
 // C Standard Libraries
 #include <stdint.h>
 
-// Network Namespace ----------------------------------------------------------------------------------------------------------
+// Namespace ------------------------------------------------------------------------------------------------------------------
 
 namespace Network
 {
@@ -73,8 +71,17 @@ namespace Network
         uint64_t     bitMask;                // Bitmask, (2 ^ bitLength - 1)
         double       scaleFactor;            // 
         double       offset;                 // 
-        bool         signedness;             // 0 => unsigned, 1 => signed
+        bool         signedness;             // false => unsigned, true => signed
     };
+
+    // Functions --------------------------------------------------------------------------------------------------------------
+
+    // Reallocate Messages
+    // - Call to reallocate the signal and message arrays, maintaining internal references
+    // - Accepts a pointer to a CAN signal array and a pointer to a CAN message array, the array's of which are replaced
+    // - Currently can only shrink a set of messages, will throw a standard exception if an attempt is made to grow a set
+    // - Can only be used on two dynamically allocated arrays
+    void reallocateMessages(CanSignal** signalArray, CanMessage** messageArray, size_t oldSignalCount, size_t newSignalCount, size_t oldMessageCount, size_t newMessageCount);
 
     // Classes ----------------------------------------------------------------------------------------------------------------
 
@@ -116,13 +123,6 @@ namespace Network
         static uint64_t encodeSignedInt(const int64_t& data, const CanSignal& signal);
         static uint64_t encodeDouble(const double& data, const CanSignal& signal);
         static uint64_t encodeBool(const bool& data, const CanSignal& signal);
-
-        // Reallocate Messages
-        // - Call to reallocate the signal and message arrays, maintaining internal references
-        // - Accepts a pointer to a CAN signal array and a pointer to a CAN message array, the array's of which are replaced
-        // - Currently can only shrink a set of messages, will throw a standard exception if an attempt is made to grow a set
-        // - Can only be used on two dynamically allocated arrays
-        static void reallocateMessages(CanSignal** signalArray, CanMessage** messageArray, size_t oldSignalCount, size_t newSignalCount, size_t oldMessageCount, size_t newMessageCount);
     };
 }
 

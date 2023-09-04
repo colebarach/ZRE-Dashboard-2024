@@ -8,16 +8,12 @@
 // Description: A group of functions relating to CAN DBC files.
 //
 // Created: 23.07.19
-// Updated: 23.08.28
-//
-// To do:
-// - Scale factor and offset are ignored, they need to be used eventually
-// - Document DBC Keywords and line formats
-// - Message and signal arrays need reallocated when this is done parsing, otherwise memory is being wasted.
-// - Use C-style file interpretation, slightly more optimal
+// Updated: 23.09.04
 //
 // References:
 // - http://mcu.so/Microcontroller/Automotive/dbc-file-format-documentation_compress.pdf
+// - https://www.csselectronics.com/pages/can-dbc-file-database-intro
+// - https://docs.fileformat.com/database/dbc/
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
@@ -30,28 +26,30 @@ namespace Network
     {
         // Compilation Flags --------------------------------------------------------------------------------------------------
 
-        // #define LOG_ENTRY_PARSING
+        #define LOG_ENTRY_PARSING     // Print the interpretation of the database to the standard output. Use for debugging.
 
         // Constants ----------------------------------------------------------------------------------------------------------
 
         #define MAX_SIZE_SIGNAL_ARRAY  4096
         #define MAX_SIZE_MESSAGE_ARRAY 1024
+        #define SIZE_DATA_BUFFER       4096
+        
+        #define STRINGIZE(x)           #x
+        #define SIZE_DATA_BUFFER_STR   STRINGIZE(SIZE_DATA_BUFFER)
 
         // DBC Keywords -------------------------------------------------------------------------------------------------------
 
-        #define DBC_KEYWORD_ECU       "BU_:"         // Network Node
-        #define DBC_KEYWORD_MESSAGE   "BO_"          // Message object
-        #define DBC_KEYWORD_SIGNAL    "SG_"          // Signal object
-        #define DBC_KEYWORD_VARIABLE  "EV_"          // Environment variable
-        #define DBC_KEYWORD_SIG_GROUP "SIG_GROUP_"   // Signal group
-        #define DBC_KEYWORD_VAL_TABLE "VAL_TABLE_"   // Value table
-        #define DBC_KEYWORD_VERSION   "VERSION"      // File version
-        #define DBC_KEYWORD_COMMENT   "CM_"          // Object comment
-        #define DBC_KEYWORD_MISC      "NS_"          // TODO: Not sure
-        #define DBC_KEYWORD_MISC2     "BS_:"         // TODO: Not sure
-        #define DBC_KEYWORD_MISC3     "BA_DEF_"      // TODO: Not sure
-        #define DBC_KEYWORD_MISC4     "BA_DEF_DEF_"  // TODO: Not sure
-        #define DBC_KEYWORD_MISC5     "VAL_"         // TODO: Not sure
+        #define DBC_KEYWORD_NETWORK_NODE "BU_:"          // CAN ECU
+        #define DBC_KEYWORD_MESSAGE      "BO_"           // CAN message
+        #define DBC_KEYWORD_SIGNAL       "SG_"           // CAN signal
+        #define DBC_KEYWORD_ENV_VARIABLE "EV_"           // Environment variable
+        #define DBC_KEYWORD_SIG_GROUP    "SIG_GROUP_"    // Signal group
+        #define DBC_KEYWORD_VAL_TABLE    "VAL_TABLE_"    // Value table
+        #define DBC_KEYWORD_VERSION      "VERSION"       // Version Number
+        #define DBC_KEYWORD_BIT_TIMING   "BS_:"          // Network baudrate, obsolete
+        #define DBC_KEYWORD_COMMENT      "CM_"           // Comments, ignored for now
+
+        #define DBC_KEYWORD_NS           "NS_"           // Purpose unknown, ignored for now
 
         // Parse File
         // - Call to parse the contents of a DBC file into CAN Messages and Signals

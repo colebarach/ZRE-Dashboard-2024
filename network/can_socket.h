@@ -73,7 +73,7 @@ namespace Network
         uint64_t     bitMask;                // Bitmask, (2 ^ bitLength - 1)
         double       scaleFactor;            // 
         double       offset;                 // 
-        bool         isSigned;               // Is signed, indicates whether data is signed before scale and offset
+        bool         signedness;             // 0 => unsigned, 1 => signed
     };
 
     // Classes ----------------------------------------------------------------------------------------------------------------

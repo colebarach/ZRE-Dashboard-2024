@@ -169,9 +169,9 @@ namespace Network
             break;
         }
         
-        // TODO: This needs fixed
         uint64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
-        // dataBuffer = static_cast<double>(dataBuffer) * signal.scaleFactor + signal.offset;
+        double floatBuffer = static_cast<double>(dataBuffer) * signal.scaleFactor + signal.offset;
+        LOG_INFO("Parsing: %f", floatBuffer);
 
         return dataBuffer;
     }
@@ -352,7 +352,7 @@ namespace Network
             newSignalArray[index].bitMask      = (*signalArray)[index].bitMask;
             newSignalArray[index].scaleFactor  = (*signalArray)[index].scaleFactor;
             newSignalArray[index].offset       = (*signalArray)[index].offset;
-            newSignalArray[index].isSigned     = (*signalArray)[index].isSigned;
+            newSignalArray[index].signedness   = (*signalArray)[index].signedness;
         }
 
         // Delete old arrays

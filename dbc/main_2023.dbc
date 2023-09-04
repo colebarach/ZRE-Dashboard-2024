@@ -54,14 +54,14 @@ BO_ 4 Command_Drive_Start: 8 Dashboard
 
 BO_ 16 Command_Drive_Configuration: 8 Dashboard
  SG_ State_Regen_Config_Enabled : 32|1@1+ (1,0) [0|1] "Boolean"  ECU
- SG_ Torque_Config_Limit_Regen : 16|16@1+ (0.1,0) [0|6553.5] "Newton Meters"  ECU
- SG_ Torque_Config_Limit : 0|16@1+ (0.1,0) [0|6553.5] "Newton Meters"  ECU
+ SG_ Torque_Config_Limit_Regen : 16|16@1+ (0.1,0) [0|6553.5] "Newton_Meters"  ECU
+ SG_ Torque_Config_Limit : 0|16@1+ (0.1,0) [0|6553.5] "Newton_Meters"  ECU
 
 BO_ 1332 Calibrate_Brake_Range: 8 Dashboard
- SG_ Brake_2_Real_Min : 32|10@1+ (1,0) [0|1023] ""  ECU
- SG_ Brake_2_Real_Max : 48|10@1+ (1,0) [0|1023] ""  ECU
+ SG_ Brake_2_Real_Min : 32|10@1+ (1,0) [0|1023] "ADC"  ECU
+ SG_ Brake_2_Real_Max : 48|10@1+ (1,0) [0|1023] "ADC"  ECU
  SG_ Brake_1_Real_Min : 0|10@1+ (1,0) [0|1023] "ADC"  ECU
- SG_ Brake_1_Real_Max : 16|10@1+ (1,0) [0|1023] ""  ECU
+ SG_ Brake_1_Real_Max : 16|10@1+ (1,0) [0|1023] "ADC"  ECU
 
 BO_ 256 Status_BMS_2: 8 BMS
  SG_ Voltage_BMS : 24|16@1+ (1,0) [0|65535] "Voltage" Vector__XXX
@@ -110,13 +110,13 @@ BO_ 1793 Data_Pedals: 8 ECU
  SG_ APPS_1_Percent : 0|16@1- (0.1,0) [-3276.8|3276.7] "Percent"  Dashboard
 
 BO_ 192 Command_Inverter: 8 ECU
- SG_ Torque_Limit : 48|16@1- (0.1,0) [-3276.8|3276.7] "Newton Meters"  Inverter
+ SG_ Torque_Limit : 48|16@1- (0.1,0) [-3276.8|3276.7] "Newton_Meters"  Inverter
  SG_ Speed_Mode : 42|1@1+ (1,0) [0|1] "Boolean"  Inverter
  SG_ Inverter_Discharge : 41|1@1+ (1,0) [0|1] "Boolean"  Inverter
  SG_ Inverter_Enable : 40|1@1+ (1,0) [0|1] "Boolean"  Inverter
  SG_ Inverter_Direction : 32|1@1+ (1,0) [0|1] "Boolean"  Inverter
  SG_ Speed_Target : 16|16@1- (1,0) [-32768|32767] "RPM"  Inverter
- SG_ Torque_Target : 0|16@1- (0.1,0) [-3276.8|3276.7] "Newton Meters"  Inverter
+ SG_ Torque_Target : 0|16@1- (0.1,0) [-3276.8|3276.7] "Newton_Meters"  Inverter
 
 BO_ 168 Data_Flux: 8 Inverter
  SG_ Current_Q_Axis : 48|16@1- (0.1,0) [-3276.8|3276.7] "Amps" Vector__XXX
@@ -143,7 +143,7 @@ BO_ 165 Data_Motor: 8 Inverter
  SG_ Motor_Angle : 0|16@1- (0.1,0) [-359.9|359.9] "Degrees" Vector__XXX
 
 BO_ 162 Data_Temperature_3_Torque: 8 Inverter
- SG_ Torque_Shudder : 48|16@1- (0.1,0) [-3276.8|3276.7] "Newton Meters" Vector__XXX
+ SG_ Torque_Shudder : 48|16@1- (0.1,0) [-3276.8|3276.7] "Newton_Meters" Vector__XXX
  SG_ Temperature_Motor : 32|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
  SG_ Temperature_Inverter_RTD5 : 16|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX
  SG_ Temperature_Inverter_RTD4 : 0|16@1- (0.1,0) [-3276.8|3276.7] "Celcius" Vector__XXX

@@ -17,7 +17,7 @@
 
 #define LOG_INFO  printf("[INFO ] "); printf
 #define LOG_ERROR printf("[ERROR] "); printf
-#define LOG_WARN  printf("[INFO ] "); printf
+#define LOG_WARN  printf("[WARN ] "); printf
 #define LOG_FATAL printf("[FATAL] "); printf
 
 #endif // LOG_H

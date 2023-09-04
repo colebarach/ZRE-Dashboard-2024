@@ -53,7 +53,7 @@ namespace Network
         size_t      signalCount;         // Number of signals in the signal array.
 
         bool rxThreadControl;            // Control / status of the RX thread. If set to false, the thread will terminate.
-        bool rxThreadDebug;              // RX thread debug control. Only works if the DEBUG_MODE flag is set in compliation.
+        bool rxThreadDebug;              // RX thread debug control.
 
         // Constructor / Destructor -------------------------------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ namespace Network
         bool getRxThreadDebug() const;
 
         // Scan RX
-        // - Scan for messages using the provided database's rx socket
+        // - Scan for messages using the provided database's RX socket
         // - Writes received data to the appropriate entry, ignores if unknown
         // - Will continue to scan until the RX control is set false  
         static void* scanRx(void* database_);

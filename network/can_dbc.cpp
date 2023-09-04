@@ -4,22 +4,29 @@
 // Includes
 #include "log.h"
 
-// C++ Standard Libraries
-#include <fstream>
-#include <string>
-
 // C Standard Libraries
+#include <stdio.h>
 #include <string.h>
 
 namespace Network
 {
+    char dataBuffer[SIZE_DATA_BUFFER];
+    char dataBuffer2[SIZE_DATA_BUFFER];
+    char dataBuffer3[SIZE_DATA_BUFFER];
+    int errorCode = -1;
+
     void CanDbc::parseFile(const char* filePath, CanMessage** messages, CanSignal** signals, size_t* messageCount, size_t* signalCount)
     {
         LOG_INFO("Loading DBC file '%s'...\n", filePath);
 
         // Open file for reading
-        std::ifstream file(filePath, std::ios_base::in);
-        std::string data;
+        FILE* file = fopen(filePath, "r");
+        if(file == NULL)
+        {
+            errorCode = errno;
+            LOG_ERROR("Failed to parse DBC file: %s\n", strerror(errorCode));
+            throw std::runtime_error("Failed to parse DBC file: " + std::string(strerror(errorCode)));
+        }
 
         // Allocate message array
         *messages = new CanMessage[MAX_SIZE_MESSAGE_ARRAY];
@@ -33,16 +40,25 @@ namespace Network
 
         while(true)
         {
-            file >> data;
+            // Read next line of the file
+            errorCode = fscanf(file, "%s", dataBuffer);
+            if(errorCode != 1)
+            {   
+                errorCode = errno;
+                LOG_ERROR("Failed to parse DBC file: %s", strerror(errorCode));
+                throw std::runtime_error("Failed to parse DBC file: " + std::string(strerror(errorCode)));
+            }
 
-            if(file.eof()) break;
+            // Check for end of file
+            if(feof(file)) break;
 
-            if(data == DBC_KEYWORD_ECU)
+            // Identify keyword
+            if(strcmp(dataBuffer, DBC_KEYWORD_NETWORK_NODE) == 0)
             {
                 // Ignore remainder of line
-                std::getline(file, data);
+                fgets(dataBuffer, SIZE_DATA_BUFFER, file);
             }
-            else if(data == DBC_KEYWORD_MESSAGE)
+            else if(strcmp(dataBuffer, DBC_KEYWORD_MESSAGE) == 0)
             {
                 if(*messageCount == MAX_SIZE_MESSAGE_ARRAY)
                 {
@@ -50,34 +66,51 @@ namespace Network
                     throw std::runtime_error("Failed to parse DBC file: The file exceeds the maximum number of messages (" + std::to_string(MAX_SIZE_MESSAGE_ARRAY) + ").");
                 }
 
-                message = &(*messages)[*messageCount];
+                // Create data buffers
+                unsigned int messageId;
+                unsigned int messageDlc;
 
-                ++(*messageCount);
+                // BO_ <id> <name>: <DLC> <Network Node>
+                // - Todo: Overflow
+                errorCode = fscanf(file, "%u %s %u %s", &messageId, dataBuffer, &messageDlc, dataBuffer2);
 
-                message->signalArray = *signals;
-                message->signalIndex = *signalCount;
-                message->signalCount = 0;
+                // Remove semicolon from message name
+                size_t charIndex = 0;
+                while(dataBuffer[charIndex] != '\0') ++charIndex;
+                if(charIndex > 0) dataBuffer[charIndex - 1] = '\0';
 
-                // Read message ID 
-                file >> message->id;
-
-                // Read message name
-                file >> data;
-                if(data.size() == 0)
+                // Validate input
+                if(errorCode != 4)
                 {
-                    LOG_ERROR("Failed to parse DBC file: Read empty message name.\n");
-                    throw std::runtime_error("Failed to parse DBC file: Read empty message name.");
+                    LOG_WARN("Failed to parse DBC message '%s': Invalid format.\n", dataBuffer);
+
+                    // Ignore remainder of line
+                    fgets(dataBuffer, SIZE_DATA_BUFFER, file);
                 }
-                message->name = new char[data.size() + 1];
-                strcpy(message->name, data.c_str());
+                else
+                {
+                    #ifdef LOG_ENTRY_PARSING
+                    LOG_INFO("Message name: %s, ID: %u, DLC: %u, ECU: %s\n", dataBuffer, messageId, messageDlc, dataBuffer2);
+                    #endif
 
-                // Ignore DLC
-                file >> data;
+                    // Add message to array
+                    message = &(*messages)[*messageCount];
+                    ++(*messageCount);
 
-                // Ignore message sending ECU
-                file >> data;
+                    message->signalArray = *signals;
+                    message->signalIndex = *signalCount;
+                    message->signalCount = 0;
+
+                    // Copy message name
+                    size_t nameSize = strlen(dataBuffer);
+                    message->name = new char[nameSize + 1];
+                    strcpy(message->name, dataBuffer);
+
+                    // Copy message metadata
+                    message->id = static_cast<uint16_t>(messageId);
+                }
             }
-            else if(data == DBC_KEYWORD_SIGNAL)
+            else if(strcmp(dataBuffer, DBC_KEYWORD_SIGNAL) == 0)
             {
                 if(message == nullptr)
                 {
@@ -90,138 +123,139 @@ namespace Network
                     LOG_ERROR("Failed to parse DBC file: The file exceeds the maximum number of signals (%i).\n", MAX_SIZE_SIGNAL_ARRAY);
                     throw std::runtime_error("Failed to parse DBC file: The file exceeds the maximum number of signals (" + std::to_string(MAX_SIZE_SIGNAL_ARRAY) + ").");
                 }
-
-                // Add signal
-                CanSignal* signal = &(*signals)[*signalCount];
-                ++(*signalCount);
-                ++message->signalCount;
-
-                signal->messageArray = (*messages);
-                signal->messageIndex = *messageCount - 1;
                 
-                // Format: SG_ <Name> : <Start bit position>|<Bit length>@<sign> (<Scale factor>,<Offset>) [<Min>|<Max>] "<Unit>" <ECU>
-                std::getline(file, data);
-                
-                // Partition string
-                size_t nameStart   = 1;                            // Keyword was already read, line now starts with name, +1 for leading space
-                size_t nameEnd     = data.find(':') - 1;           // Name ends at the colon, -1 for space
-                size_t bitPosStart = nameEnd + 3;                  // Bit pos starts after name, +3 for " : "
-                size_t bitPosEnd   = data.find('|');               // Bit pos ends at '|'
-                size_t bitLenStart = bitPosEnd + 1;                // Bit len starts after '|'
-                size_t bitLenEnd   = data.find('@');               // Bit len ends at '@'
-                size_t signStart   = bitLenEnd + 1;                // Sign starts after bit len
-                size_t signEnd     = data.find('(') - 1;           // Sign ends before '(', +1 for space
+                // Create data buffers
+                unsigned int bitPosition;
+                unsigned int bitLength;
+                unsigned int endianness;
+                char signedness;
+                double scaleFactor;
+                double offset;
+                double min;
+                double max;
 
-                #ifdef LOG_ENTRY_PARSING
+                // Format: SG_ <Name> : <Bit position>|<Bit length>@<Endianness><Signedness> (<Scale factor>,<Offset>) [<Min>|<Max>] "<Unit>" <Network Node>
+                errorCode = fscanf(file, "%s : %u|%u@%u%c (%lf,%lf) [%lf|%lf] \"%s %s", dataBuffer, &bitPosition, &bitLength, &endianness, &signedness, &scaleFactor, &offset, &min, &max, dataBuffer2, dataBuffer3);
 
-                size_t scaleStart  = signEnd + 2;                  // Scale starts after '('
-                size_t scaleEnd    = data.find(',');               // Scale ends at ','
-                size_t offsetStart = scaleEnd + 1;                 // Offset starts after ','
-                size_t offsetEnd   = data.find(')');               // Offset ends at ')'
-                size_t minStart    = offsetEnd + 3;                // Min starts 3 characters after offset
-                size_t minEnd      = data.find('|', minStart);     // Min ends with '|', second instance of this in data
-                size_t maxStart    = minEnd + 1;                   // Max starts after '|', +1 char
-                size_t maxEnd      = data.find(']');               // Max ends with ']'
-                size_t unitStart   = data.find('"')+1;             // Unit starts with '""
-                size_t unitEnd     = data.find('"', unitStart);    // Unit ends with second instance of '"'
-                size_t ecuStart    = unitEnd + 3;                  // ECU starts after unit, +3 for '"' and 2 spaces
-                size_t ecuEnd      = data.length()-1;              // ECU ends with line
-                
-                std::string debugSignalName  = data.substr(nameStart,   nameEnd   - nameStart);
-                std::string debugBitPosition = data.substr(bitPosStart, bitPosEnd - bitPosStart);
-                std::string debugBitLength   = data.substr(bitLenStart, bitLenEnd - bitLenStart);
-                std::string debugSign        = data.substr(signStart,   signEnd   - signStart);
-                std::string debugScale       = data.substr(scaleStart,  scaleEnd  - scaleStart);
-                std::string debugOffset      = data.substr(offsetStart, offsetEnd - offsetStart);
-                std::string debugMin         = data.substr(minStart,    minEnd    - minStart);
-                std::string debugMax         = data.substr(maxStart,    maxEnd    - maxStart);
-                std::string debugUnit        = data.substr(unitStart,   unitEnd   - unitStart);
-                std::string debugEcu         = data.substr(ecuStart,    ecuEnd    - ecuStart);
+                // Remove ending quote from unit name
+                size_t charIndex = 0;
+                while(dataBuffer2[charIndex] != '\0') ++charIndex;
+                if(charIndex > 0) dataBuffer2[charIndex - 1] = '\0';
 
-                LOG_INFO("Signal Partitioning: Name '%s', Bit Position '%s', Bit Length '%s', Is signed '%s', Scale Factor '%s', Offset '%s', Minimum '%s', Maximum '%s', Units '%s', ECU Name '%s'.\n",
-                debugSignalName.c_str(), debugBitPosition.c_str(), debugBitLength.c_str(), debugSign.c_str(), debugScale.c_str(), debugOffset.c_str(), debugMin.c_str(), debugMax.c_str(), debugUnit.c_str(), debugEcu.c_str());
-                
-                #endif // LOG_ENTRY_PARSING
-
-                // Read name
-                std::string signalName = data.substr(nameStart, nameEnd - nameStart);
-                signal->name = new char[signalName.size() + 1];
-                if(signalName.size() == 0)
+                // Validate input
+                if(errorCode != 11)
                 {
-                    LOG_ERROR("Failed to parse DBC file: Read empty signal name.\n");
-                    throw std::runtime_error("Failed to parse DBC file: Read empty signal name.");
-                }
-                strcpy(signal->name, signalName.c_str());
-
-                // Read bit position
-                signal->bitPosition = atoi(data.substr(bitPosStart, bitPosEnd - bitPosStart).c_str());
-                
-                // Read bit length
-                signal->bitLength = atoi(data.substr(bitLenStart, bitLenEnd - bitLenStart).c_str());
-                
-                // Populate bitmask
-                signal->bitMask = 0U;
-                for(size_t index = 0; index < signal->bitLength; ++index)
-                {
-                    signal->bitMask |= 1U << index;
-                }
-
-                // Read sign ("1+" => unsigned, "1-" => signed)
-                signal->isSigned = (data.substr(signStart, signEnd - signStart) == "1-");
-
-                // TODO: FLOATS
-                if(signal->bitLength == 1)
-                {
-                    signal->datatypeId = ID_DATATYPE_BOOL;
-                }
-                else if(signal->isSigned)
-                {
-                    signal->datatypeId = ID_DATATYPE_INT;
+                    LOG_WARN("Failed to parse DBC signal '%s': Invalid format.\n", dataBuffer);
+                    
+                    // Ignore remainder of line
+                    fgets(dataBuffer, SIZE_DATA_BUFFER, file);
                 }
                 else
                 {
-                    signal->datatypeId = ID_DATATYPE_UINT;
-                }
-            }
-            else if(data == DBC_KEYWORD_COMMENT)
-            {
-                // Ignore remainder of line.
-                std::getline(file, data);
-            }
-            else if(data == DBC_KEYWORD_VAL_TABLE)
-            {
-                // Ignore remainder of line
-                std::getline(file, data);
-            }
-            else if(data == DBC_KEYWORD_VERSION)
-            {
-                // Ignore remainder of line
-                std::getline(file, data);
-            }
-            else if(data == DBC_KEYWORD_MISC)
-            {
-                // Ignore all following lines starting with tab
-                char nextChar = ' ';
-                while(nextChar == ' ' || nextChar == '\t')
-                {
-                    std::getline(file, data);
+                    #ifdef LOG_ENTRY_PARSING
+                    LOG_INFO("Signal name: %s, Bit Pos: %i, Bit Len: %i, Endianness: %i, Sign: %c, Scale: %f, Offset: %f, Min: %f, Max: %f, Unit: %s, ECU: %s\n", dataBuffer, bitPosition, bitLength, endianness, signedness, scaleFactor, offset, min, max, dataBuffer2, dataBuffer3);
+                    #endif
 
-                    nextChar = file.peek();
+                    // Add signal to array
+                    CanSignal* signal = &(*signals)[*signalCount];
+                    ++(*signalCount);
+                    ++message->signalCount;
+
+                    signal->messageArray = (*messages);
+                    signal->messageIndex = *messageCount - 1;
+                    
+                    // Copy signal name
+                    size_t nameSize = strlen(dataBuffer);
+                    signal->name = new char[nameSize + 1];
+                    strcpy(signal->name, dataBuffer);
+
+                    // Copy signal metadata
+                    signal->bitPosition = static_cast<uint16_t>(bitPosition);
+                    signal->bitLength   = static_cast<uint16_t>(bitLength);
+                    signal->scaleFactor = scaleFactor;
+                    signal->offset      = offset;
+                    signal->signedness  = signedness == '+';
+
+                    // Populate bitmask
+                    signal->bitMask = 0;
+                    for(uint16_t index = 0; index < signal->bitLength; ++index)
+                    {
+                        signal->bitMask |= (1 << index);
+                    }
+
+                    // Determine datatype ID
+                    signal->datatypeId = 0;
                 }
             }
-            else if(data == DBC_KEYWORD_MISC2)
+            else if(strcmp(dataBuffer, DBC_KEYWORD_ENV_VARIABLE) == 0)
             {
-                // Ignore
+                // TODO: Figure out format
+                LOG_WARN("Environment variables are not implemented. Ignoring...\n");
             }
-            else if(data == DBC_KEYWORD_MISC3 || data == DBC_KEYWORD_MISC4 || data == DBC_KEYWORD_MISC5)
+            else if(strcmp(dataBuffer, DBC_KEYWORD_SIG_GROUP) == 0)
             {
-                // Ignore line
-                std::getline(file, data);
+                // TODO: Figure out format
+                LOG_WARN("Signal groups are not implemented. Ignoring...\n");
+            }
+            else if(strcmp(dataBuffer, DBC_KEYWORD_VAL_TABLE) == 0)
+            {
+                LOG_WARN("Value tables are not implemented. Ignoring...\n");
+
+                // Ignore remainder of line
+                fgets(dataBuffer, SIZE_DATA_BUFFER, file);
+            }
+            else if(strcmp(dataBuffer, DBC_KEYWORD_VERSION) == 0)
+            {
+                // Ignore remainder of line
+                fgets(dataBuffer, SIZE_DATA_BUFFER, file);
+            }
+            else if(strcmp(dataBuffer, DBC_KEYWORD_BIT_TIMING) == 0)
+            {
+                // Ignore remainder of line
+                fgets(dataBuffer, SIZE_DATA_BUFFER, file);
+            }
+            else if(strcmp(dataBuffer, DBC_KEYWORD_COMMENT) == 0)
+            {
+                // Ignore remainder of line
+                fgets(dataBuffer, SIZE_DATA_BUFFER, file);
+            }
+            else if(strcmp(dataBuffer, DBC_KEYWORD_NS) == 0)
+            {
+                // Ignore every following line starting with whitespace
+                while(true)
+                {
+                    // Read first char and check to see if it is whitespace
+                    errorCode = fgetc(file);
+                    if(errorCode == EOF) break;
+                    unsigned char startingChar = static_cast<unsigned char>(errorCode);
+                    if(startingChar != ' ' && startingChar != '\t')
+                    {
+                        // Return the stream to its previous state and return to normal loop
+                        ungetc(static_cast<int>(startingChar), file);
+                        break;
+                    }
+
+                    // Ignore remainder of line
+                    char* errorChar = fgets(dataBuffer, SIZE_DATA_BUFFER, file);
+                    if(errorChar == NULL) break;
+                }
             }
             else
             {
-                LOG_WARN("Unknown keyword '%s'. Ignoring...\n", data.c_str());
+                LOG_WARN("Unknown keyword '%s'. Ignoring line...\n", dataBuffer);
+
+                // Ignore remainder of line
+                fgets(dataBuffer, SIZE_DATA_BUFFER, file);
             }
+
+            // Check for end of file
+            if(feof(file)) break;
+        }
+
+        // Close the file
+        if(file != NULL)
+        {
+            fclose(file);
         }
 
         // Shrink the arrays to save memory, not necessary but should be done

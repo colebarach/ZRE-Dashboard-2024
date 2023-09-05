@@ -1,15 +1,11 @@
 # To do:
 # network.a doesn't detect changes in the source. If something is changed the -B flag must be included in the make command
 
-all: lib/network.a bin/dash_can_cli bin/dash-tui qt_build/dash_qt
+all: lib/network.a bin/dash_can_cli qt_build/dash_qt
 
 bin/dash_can_cli: lib/network.a cli/dash_can_cli.cpp
 	mkdir -p bin
 	g++ cli/dash_can_cli.cpp lib/network.a -o bin/dash-can-cli -I network/
-
-bin/dash-tui: lib/network.a tui/main.cpp
-	mkdir -p bin
-	g++ tui/main.cpp lib/network.a -o bin/dash-tui -I network/ -lncurses
 
 qt_build/dash_qt:
 	make -C qt

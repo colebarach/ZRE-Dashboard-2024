@@ -1,18 +1,18 @@
-#ifndef VIEW_MENU_H
-#define VIEW_MENU_H
+#ifndef VIEW_BMS_H
+#define VIEW_BMS_H
 
-// Menu View ------------------------------------------------------------------------------------------------------------------
+// BMS View -------------------------------------------------------------------------------------------------------------------
 //
-// Description: The main menu of the GUI.
+// Description: BMS monitoring tool
 //
-// Created: 23.08.23
-// Updated: 23.08.23
-//
+// Created: 23.09.04
+// Updated: 23.09.04
 
 // Libraries ------------------------------------------------------------------------------------------------------------------
 
 // Includes
 #include "view.h"
+#include "stat_cell.h"
 
 // QT Libraries
 #include <QWidget>
@@ -23,20 +23,25 @@
 // - This namespace and class are generated at compile-time using the form file
 namespace Ui
 {
-    class ViewMenu;
+    class ViewBms;
 }
 
-class ViewMenu : public View
+class ViewBms : public View
 {
     Q_OBJECT // QT object boilerplate
+    
+    // Constants --------------------------------------------------------------------------------------------------------------
+
+    #define SEGMENT_COUNT     5
+    #define CELLS_PER_SEGMENT 18
     
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
     public:
 
-    ViewMenu(QWidget* parent_, MainWindow* mainWindow_, Network::Database* database_);
+    ViewBms(QWidget* parent_, MainWindow* mainWindow_, Network::Database* database_);
 
-    ~ViewMenu();
+    ~ViewBms();
 
     // Public Funtions --------------------------------------------------------------------------------------------------------
 
@@ -46,17 +51,15 @@ class ViewMenu : public View
 
     private slots:
 
-    void handleButtonDrive();
-
-    void handleButtonBms();
-
-    void handleButtonDebug();
+    void handleButtonMenu();
 
     // Protected Variables ----------------------------------------------------------------------------------------------------
 
     protected:
 
-    Ui::ViewMenu* ui;
+    Ui::ViewBms* ui;
+
+    StatCell*** cells;
 };
 
-#endif // VIEW_MENU_H
+#endif // VIEW_BMS_H

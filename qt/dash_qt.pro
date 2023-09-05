@@ -20,21 +20,26 @@ SOURCES += \
     main_window.cpp \
     view_menu.cpp \
     view_drive.cpp \
+    view_bms.cpp \
     view_debug.cpp \
-    strata_bar.cpp
+    strata_bar.cpp \
+    stat_cell.cpp
 
 HEADERS += \
     main_window.h \
     view.h \
     view_menu.h \
     view_drive.h \
+    view_bms.h \
     view_debug.h \
-    strata_bar.h
+    strata_bar.h \
+    stat_cell.h
 
 FORMS += \
     main_window.ui \
     view_menu.ui \
     view_drive.ui \
+    view_bms.ui \
     view_debug.ui \
     view_settings.ui
 

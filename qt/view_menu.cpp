@@ -14,8 +14,9 @@ ViewMenu::ViewMenu(QWidget* parent_, MainWindow* mainWindow_, Network::Database*
     ui->setupUi(this);
 
     // Connect GUI events
-    connect(ui->buttonDrive,     SIGNAL(clicked()), this, SLOT(handleButtonDrive()));
-    connect(ui->buttonDebug,     SIGNAL(clicked()), this, SLOT(handleButtonDebug()));
+    connect(ui->buttonDrive, SIGNAL(clicked()), this, SLOT(handleButtonDrive()));
+    connect(ui->buttonBms,   SIGNAL(clicked()), this, SLOT(handleButtonBms()));
+    connect(ui->buttonDebug, SIGNAL(clicked()), this, SLOT(handleButtonDebug()));
 }
 
 ViewMenu::~ViewMenu()
@@ -29,6 +30,11 @@ void ViewMenu::update() {}
 void ViewMenu::handleButtonDrive()
 {
     mainWindow->setView(ID_VIEW_DRIVE);
+}
+
+void ViewMenu::handleButtonBms()
+{
+    mainWindow->setView(ID_VIEW_BMS);
 }
 
 void ViewMenu::handleButtonDebug()

@@ -170,7 +170,10 @@ namespace Network
             break;
         }
         
+        // Mask integer
         uint64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
+        
+        // Scale factor & offset
         dataBuffer = static_cast<uint64_t>(dataBuffer * signal.scaleFactor + signal.offset);
 
         return dataBuffer;
@@ -196,7 +199,16 @@ namespace Network
             break;
         }
         
+        // Mask integer
         int64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
+        
+        // Sign extension
+        if((dataBuffer >> (signal.bitLength - 1)) == 0b1)
+        {
+            dataBuffer |= ~signal.bitMask;
+        }
+
+        // Scale factor & offset
         dataBuffer = static_cast<int64_t>(dataBuffer * signal.scaleFactor + signal.offset);
 
         return dataBuffer;
@@ -226,12 +238,24 @@ namespace Network
 
         if(signal.signedness)
         {
+            // Mask integer
             int64_t intBuffer = (data >> signal.bitPosition) & signal.bitMask;
+            
+            // Sign extension
+            if((intBuffer >> (signal.bitLength - 1)) == 0b1)
+            {
+                intBuffer |= ~signal.bitMask;
+            }
+
+            // Scale factor & offset
             dataBuffer = intBuffer * signal.scaleFactor + signal.offset;
         }
         else
         {
+            // Mask integer
             uint64_t intBuffer = (data >> signal.bitPosition) & signal.bitMask;
+
+            // Scale factor & offset
             dataBuffer = intBuffer * signal.scaleFactor + signal.offset;
         }
 
@@ -258,6 +282,7 @@ namespace Network
             break;
         }
         
+        // Mask bit
         uint64_t dataBuffer = (data >> signal.bitPosition) & signal.bitMask;
 
         return dataBuffer == 1;

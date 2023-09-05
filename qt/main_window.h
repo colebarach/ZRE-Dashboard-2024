@@ -42,9 +42,10 @@ class MainWindow : public QMainWindow
     #define UPDATE_INTERVAL_MS 100
 
     #define ID_VIEW_MENU     0
-    #define ID_VIEW_DEBUG    1
-    #define ID_VIEW_DRIVE    2
-    #define ID_VIEW_SETTINGS 3
+    #define ID_VIEW_DRIVE    1
+    #define ID_VIEW_BMS      2
+    #define ID_VIEW_DEBUG    3
+    #define ID_VIEW_SETTINGS 4
 
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
@@ -69,6 +70,7 @@ class MainWindow : public QMainWindow
     Ui::MainWindow*    ui;               // UI of the window, sourced from main_window.ui
     View*              viewMenu;         // Menu view, instance from view_menu.h
     View*              viewDrive;        // Driving view, instance from view_drive.h
+    View*              viewBms;          // BMS view, instance from view_bms.h
     View*              viewDebug;        // Debug view, instance from view_debug.h
 
     Network::Database* database;         // Database to be visualized

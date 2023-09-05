@@ -5,6 +5,7 @@
 #include "config.h"
 #include "view_menu.h"
 #include "view_drive.h"
+#include "view_bms.h"
 #include "view_debug.h"
 
 // UI Includes
@@ -30,12 +31,14 @@ MainWindow::MainWindow(Network::Database* database, QWidget* parent) : QMainWind
     setWindowTitle(QString::fromStdString(std::string(BUILD_TITLE) + " - " + __DATE__ + " - QT Frontend - Rev." + BUILD_REVISION));
 
     // Create views
-    viewMenu  = new ViewMenu(ui->frameViews, this, database);
+    viewMenu  = new ViewMenu (ui->frameViews, this, database);
     viewDrive = new ViewDrive(ui->frameViews, this, database);
+    viewBms   = new ViewBms  (ui->frameViews, this, database);
     viewDebug = new ViewDebug(ui->frameViews, this, database);
 
     ui->frameViews->addWidget(viewMenu);
     ui->frameViews->addWidget(viewDrive);
+    ui->frameViews->addWidget(viewBms);
     ui->frameViews->addWidget(viewDebug);
 
     // Create the update timer
@@ -69,6 +72,9 @@ void MainWindow::setView(int viewId)
             break;
         case ID_VIEW_DRIVE:
             ui->frameViews->setCurrentWidget(viewDrive);
+            break;
+        case ID_VIEW_BMS:
+            ui->frameViews->setCurrentWidget(viewBms);
             break;
         case ID_VIEW_SETTINGS:
             break;

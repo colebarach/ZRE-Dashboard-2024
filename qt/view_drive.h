@@ -28,8 +28,8 @@
 #define TEMP_ACC_MAX     "Temperature_BMS_Max"           // Integer
 #define TEMP_INV_MAX     "Temperature_Inverter_Module_A" // Integer
 #define TEMP_MOTOR_MAX   "Temperature_Motor"             // Integer
-#define THROTTLE_PERCENT "APPS_1_Percent"                // Integer
-#define BRAKE_PERCENT    "Brake_1_Percent"               // Integer
+#define THROTTLE_PERCENT "APPS_1_Percent"                // Double
+#define BRAKE_PERCENT    "Brake_1_Percent"               // Double
 #define TORQUE_PERCENT   "Torque_Config_Limit"           // Integer
 #define REGEN_PERCENT    "Torque_Config_Limit_Regen"     // Integer
 
@@ -82,8 +82,8 @@ class ViewDrive : public View
     int* tempAccumulatorMax;
     int* tempInverterMax;
     int* tempMotorMax;
-    int* throttlePercent;
-    int* brakePercent;
+    double* throttlePercent;
+    double* brakePercent;
     int* torquePercent;
     int* regenPercent;
 };

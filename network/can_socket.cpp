@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 // POSIX Libraries
 #include <unistd.h>
@@ -365,12 +366,12 @@ namespace Network
 
         if(signal.signedness)
         {
-            int64_t intBuffer = static_cast<int64_t>(dataBuffer);
+            int64_t intBuffer = round(dataBuffer);
             bitBuffer = (intBuffer & signal.bitMask) << signal.bitPosition;
         }
         else
         {
-            uint64_t intBuffer = static_cast<uint64_t>(dataBuffer);
+            uint64_t intBuffer = round(dataBuffer);
             bitBuffer = (intBuffer & signal.bitMask) << signal.bitPosition;
         }
 

@@ -17,6 +17,10 @@
 // QT Libraries
 #include <QWidget>
 
+// Database Keys --------------------------------------------------------------------------------------------------------------
+
+#define CELL_VOLTAGE_N "Voltage_Cell_%lu" // Double (0 <= n < SEGMENT_COUNT * CELLS_PER_SEGMENT)
+
 // Classes --------------------------------------------------------------------------------------------------------------------
 
 // View UI forward declaration
@@ -34,7 +38,7 @@ class ViewBms : public View
 
     #define SEGMENT_COUNT     5
     #define CELLS_PER_SEGMENT 18
-    
+
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
     public:
@@ -59,7 +63,10 @@ class ViewBms : public View
 
     Ui::ViewBms* ui;
 
-    StatCell*** cells;
+    StatCell*** cellStats;
+
+    double*** cellVoltages;
+    bool***   cellBalangings;
 };
 
 #endif // VIEW_BMS_H

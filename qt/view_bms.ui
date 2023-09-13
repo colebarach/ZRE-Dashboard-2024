@@ -499,164 +499,7 @@
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="5" column="2">
-       <widget class="QLabel" name="labelMaxVoltage">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Max Voltage:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QLabel" name="statSenseLineTest">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="3">
-       <widget class="QLabel" name="statMinVoltage">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QLabel" name="statPackCharge">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="statSelfTest">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="labelSenseLineTest">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Sense Lines:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelBmsCan">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>BMS CAN:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="statTempTest">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3">
-       <widget class="QLabel" name="statPackCurrent">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="statBmsCan">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="labelPackCharge">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Pack Charge:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5">
-       <widget class="QLabel" name="statMaxTemp">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5">
-       <widget class="QLabel" name="statMaxDelta">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="statVoltTest">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <widget class="QLabel" name="statMaxVoltage">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
+      <item row="6" column="4">
        <widget class="QLabel" name="labelMinVoltage">
         <property name="font">
          <font>
@@ -676,8 +519,8 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelVoltTest">
+      <item row="1" column="1">
+       <widget class="QLabel" name="labelBmsCan">
         <property name="font">
          <font>
           <family>ExcludedItalic</family>
@@ -686,7 +529,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Volt Test:</string>
+         <string>CAN Status:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -696,128 +539,62 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="3">
-       <widget class="QLabel" name="statPackVoltage">
-        <property name="text">
-         <string>--</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="labelTempTest">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Temp Test:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <widget class="QLabel" name="statAvgDelta">
+      <item row="6" column="5">
+       <widget class="QLabel" name="statMinVoltage">
         <property name="text">
          <string>--</string>
         </property>
        </widget>
       </item>
       <item row="5" column="5">
-       <widget class="QLabel" name="statAvgTemp">
+       <widget class="QLabel" name="statMaxVoltage">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLabel" name="labelSenseLineTest">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Sense Lines:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="statBmsCan">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLabel" name="statTempTest">
         <property name="text">
          <string>--</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QLabel" name="labelPackVoltage">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
+       <widget class="QLabel" name="statSelfTest">
         <property name="text">
-         <string>Pack Voltage:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
+         <string>--</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelSelfTest">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Self-Test:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QLabel" name="labelPackCurrent">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Pack Current:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QLabel" name="labelMaxDelta">
-        <property name="font">
-         <font>
-          <family>ExcludedItalic</family>
-          <pointsize>15</pointsize>
-          <italic>true</italic>
-         </font>
-        </property>
-        <property name="text">
-         <string>Max Delta:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="indent">
-         <number>6</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="4">
+      <item row="2" column="7">
        <widget class="QLabel" name="labelAvgDelta">
         <property name="font">
          <font>
@@ -837,7 +614,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="4">
+      <item row="4" column="7">
        <widget class="QLabel" name="labelMaxTemp">
         <property name="font">
          <font>
@@ -857,7 +634,256 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="8">
+       <widget class="QLabel" name="statMaxDelta">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="9">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="labelPackCharge">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Pack Charge:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QLabel" name="labelMaxDelta">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Max Delta:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5">
+       <widget class="QLabel" name="statPackCurrent">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QLabel" name="statPackVoltage">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="statVoltTest">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="statPackCharge">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="8">
+       <widget class="QLabel" name="statAvgTemp">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QLabel" name="statSenseLineTest">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="8">
+       <widget class="QLabel" name="statAvgDelta">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="8">
+       <widget class="QLabel" name="statMaxTemp">
+        <property name="text">
+         <string>--</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="4">
+       <widget class="QLabel" name="labelPackCurrent">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Pack Current:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="4">
+       <widget class="QLabel" name="labelPackVoltage">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Pack Voltage:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="labelSelfTest">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Self-Test:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
       <item row="5" column="4">
+       <widget class="QLabel" name="labelMaxVoltage">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Max Voltage:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLabel" name="labelTempTest">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Temp Test:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="labelVoltTest">
+        <property name="font">
+         <font>
+          <family>ExcludedItalic</family>
+          <pointsize>15</pointsize>
+          <italic>true</italic>
+         </font>
+        </property>
+        <property name="text">
+         <string>Volt Test:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="indent">
+         <number>6</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="7">
        <widget class="QLabel" name="labelAvgTemp">
         <property name="font">
          <font>
@@ -876,6 +902,32 @@
          <number>6</number>
         </property>
        </widget>
+      </item>
+      <item row="4" column="0">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="4" column="6">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -1005,9 +1057,11 @@
      </property>
      <property name="font">
       <font>
-       <family>Monospace</family>
-       <pointsize>11</pointsize>
+       <family>FreeMono</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
        <italic>false</italic>
+       <bold>true</bold>
       </font>
      </property>
     </widget>

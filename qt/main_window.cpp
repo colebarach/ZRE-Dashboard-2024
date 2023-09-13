@@ -87,6 +87,7 @@ void MainWindow::update()
 {
     viewMenu->update();
     viewDrive->update();
+    viewBms->update();
     viewDebug->update();
 
     // Restart the timer

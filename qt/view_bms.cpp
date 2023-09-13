@@ -7,6 +7,9 @@
 // UI Includes
 #include "ui_view_bms.h"
 
+// C Standard Libraries
+#include <string.h>
+
 // QT Libraries
 #include <QLayout>
 #include <QGridLayout>
@@ -17,20 +20,28 @@ ViewBms::ViewBms(QWidget* parent_, MainWindow* mainWindow_, Network::Database* d
     ui = new Ui::ViewBms;
     ui->setupUi(this);
 
+    // Create center layout
     QGridLayout* layout = new QGridLayout(ui->frameCenter);
-
     layout->setSpacing(3);
 
-    cells = new StatCell**[SEGMENT_COUNT];
+    cellStats    = new StatCell**[SEGMENT_COUNT];
+    cellVoltages = new double**[SEGMENT_COUNT];
+
     for(size_t segmentIndex = 0; segmentIndex < SEGMENT_COUNT; ++segmentIndex)
     {
-        cells[segmentIndex] = new StatCell*[CELLS_PER_SEGMENT];
+        cellStats[segmentIndex]    = new StatCell*[CELLS_PER_SEGMENT];
+        cellVoltages[segmentIndex] = new double*[CELLS_PER_SEGMENT];
 
         for(size_t cellIndex = 0; cellIndex < CELLS_PER_SEGMENT; ++cellIndex)
         {
-            cells[segmentIndex][cellIndex] = new StatCell(ui->frameCenter);
+            char dataBuffer[DATABASE_KEY_LENGTH];
 
-            layout->addWidget(cells[segmentIndex][cellIndex], segmentIndex, cellIndex);
+            cellStats[segmentIndex][cellIndex] = new StatCell(ui->frameCenter);
+            
+            sprintf(dataBuffer, CELL_VOLTAGE_N, segmentIndex * CELLS_PER_SEGMENT + cellIndex);
+            cellVoltages[segmentIndex][cellIndex] = database->reference<double>(dataBuffer);
+
+            layout->addWidget(cellStats[segmentIndex][cellIndex], segmentIndex, cellIndex);
         }
     }
 
@@ -48,7 +59,16 @@ ViewBms::~ViewBms()
     // TODO: Delete everything
 }
 
-void ViewBms::update() {}
+void ViewBms::update()
+{
+    for(size_t segmentIndex = 0; segmentIndex < SEGMENT_COUNT; ++segmentIndex)
+    {
+        for(size_t cellIndex = 0; cellIndex < CELLS_PER_SEGMENT; ++cellIndex)
+        {
+            cellStats[segmentIndex][cellIndex]->setVoltage(*(cellVoltages[segmentIndex][cellIndex]));
+        }
+    }
+}
 
 void ViewBms::handleButtonMenu()
 {

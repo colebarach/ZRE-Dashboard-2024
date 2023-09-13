@@ -8,14 +8,24 @@
 // QT Libraries
 #include <QApplication>
 
+// C++ Libraries
+#include <exception>
+
 int main(int argc, char *argv[])
 {
-    QApplication application(argc, argv);
+    try
+    {
+        QApplication application(argc, argv);
 
-    Network::CanDatabase database(argv[2], argv[1]);
+        Network::CanDatabase database(argv[2], argv[1]);
 
-    MainWindow window(&database);
-    window.show();
+        MainWindow window(&database);
+        window.show();
 
-    return application.exec();
+        return application.exec();
+    }
+    catch(const std::exception& exception)
+    {
+        LOG_FATAL("%s\n", exception.what());
+    }
 }

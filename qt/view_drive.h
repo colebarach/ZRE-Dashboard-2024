@@ -25,7 +25,7 @@
 #define MOTOR_SPEED      "Motor_Speed"                   // Integer
 #define MOTOR_MPH        "Motor_Speed"                   // Integer
 #define STATE_OF_CHARGE  "State_of_Charge"               // Integer
-#define TEMP_ACC_MAX     "Temperature_BMS_Max"           // Integer
+#define TEMP_ACC_MAX     "Temperature_AMS_Max"           // Integer
 #define TEMP_INV_MAX     "Temperature_Inverter_Module_A" // Integer
 #define TEMP_MOTOR_MAX   "Temperature_Motor"             // Integer
 #define THROTTLE_PERCENT "APPS_1_Percent"                // Double

@@ -15,6 +15,10 @@ class StatCell : public QFrame
 
     ~StatCell();
 
+    // Public Functions -------------------------------------------------------------------------------------------------------
+
+    void setVoltage(double voltage);
+
     // Protected Variables ----------------------------------------------------------------------------------------------------
 
     protected:
@@ -22,6 +26,12 @@ class StatCell : public QFrame
     QLabel* voltageStat;
 
     QPalette* framePalette;
+
+    QString* voltageText;
+
+    // Protected Functions ----------------------------------------------------------------------------------------------------
+
+    static int getNthDigit(double value, int n);
 };
 
 #endif // STAT_CELL_H

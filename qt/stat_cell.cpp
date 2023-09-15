@@ -10,7 +10,6 @@
 // QT Libraries
 #include <QLayout>
 #include <QGridLayout>
-#include <QString>
 
 StatCell::StatCell(QWidget* parent) : QFrame(parent)
 {
@@ -35,8 +34,7 @@ StatCell::~StatCell()
 
 void StatCell::setVoltage(double voltage)
 {
-    char dataBuffer[6]; // 1 digit, 1 decimal point, 2 digits precision
-
+    // Round to 2 decimal places
     voltage = round(voltage * 100) / 100.0;
 
     // Get first digit of number
@@ -52,7 +50,9 @@ void StatCell::setVoltage(double voltage)
     }
     else
     {
-        // Convert int to char
+        // Write first digit
+        // - The " + '0' " adds the voltage's value to the start of the numerals in ASCII, this converts an integer to a
+        //   single digit
         dataBuffer[0] = static_cast<int>(trunc(voltage)) + '0';
     }
 
@@ -63,9 +63,11 @@ void StatCell::setVoltage(double voltage)
     dataBuffer[2] = '\n';
 
     // Insert first digit
+    // - See above for char addition
     dataBuffer[3] = StatCell::getNthDigit(voltage, 1) + '0';
     
     // Insert second digit
+    // - See above for char addition
     dataBuffer[4] = StatCell::getNthDigit(voltage, 2) + '0';
 
     // Terminate string

@@ -29,6 +29,8 @@ class StatCell : public QFrame
 
     QString* voltageText;
 
+    char dataBuffer[6]; // 1 digit, 1 decimal point, 2 digits precision
+
     // Protected Functions ----------------------------------------------------------------------------------------------------
 
     static int getNthDigit(double value, int n);

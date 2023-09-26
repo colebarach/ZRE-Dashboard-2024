@@ -39,6 +39,8 @@ class ViewBms : public View
     #define SEGMENT_COUNT     5
     #define CELLS_PER_SEGMENT 18
 
+    #define PADDING_CENTER_FRAME 2
+
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
     public:

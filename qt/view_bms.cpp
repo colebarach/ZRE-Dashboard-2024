@@ -22,7 +22,7 @@ ViewBms::ViewBms(QWidget* parent_, MainWindow* mainWindow_, Network::Database* d
 
     // Create center layout
     QGridLayout* layout = new QGridLayout(ui->frameCenter);
-    layout->setSpacing(3);
+    layout->setSpacing(PADDING_CENTER_FRAME);
 
     cellStats    = new StatCell**[SEGMENT_COUNT];
     cellVoltages = new double**[SEGMENT_COUNT];
@@ -65,7 +65,7 @@ void ViewBms::update()
     {
         for(size_t cellIndex = 0; cellIndex < CELLS_PER_SEGMENT; ++cellIndex)
         {
-            cellStats[segmentIndex][cellIndex]->setVoltage(*(cellVoltages[segmentIndex][cellIndex]));
+            cellStats[segmentIndex][cellIndex]->set(*(cellVoltages[segmentIndex][cellIndex]), 100, 0, false);
         }
     }
 }

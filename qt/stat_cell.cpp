@@ -47,8 +47,12 @@ StatCell::StatCell(QWidget* parent) : QFrame(parent)
     innerLayout->addWidget(innerStat);
     innerFrame->setLayout(innerLayout);
 
+    // Create colors
+    colorBalancingOn  = new QColor(COLOR_CELL_BALANCING_ON);
+    colorBalancingOff = new QColor(COLOR_CELL_BALANCING_OFF);
+
     // Set default mode
-    mode = ID_MODE_TEMPERATURE;
+    mode = ID_MODE_OVERVIEW;
 }
 
 StatCell::~StatCell()
@@ -61,20 +65,28 @@ StatCell::~StatCell()
 
 void StatCell::set(double voltage, double temperature, double lowVoltage, bool isBalancing)
 {
-    // Check whether to render border
     if(mode == ID_MODE_OVERVIEW)
     {
+        // Render Border ------------------------------------------------------------------------------------------------------
         innerFrame->setLineWidth(SIZE_INNER_FRAME_BORDER);
-    }
-    else
-    {
-        innerFrame->setLineWidth(0);
-    }
 
-    // How to display stat
-    if(mode == ID_MODE_OVERVIEW || mode == ID_MODE_VOLTAGE)
-    {
-        // Render voltage -----------------------------------------------------------------------------------------------------
+        // Render Inner Frame -------------------------------------------------------------------------------------------------
+        if(isBalancing)
+        {
+            innerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOn);
+            innerFrame->setPalette(*innerPalette);
+        }
+        else
+        {
+            innerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOff);
+            innerFrame->setPalette(*innerPalette);
+        }
+
+        // Render Outer Frame -------------------------------------------------------------------------------------------------
+        
+        // TODO
+
+        // Render Stat --------------------------------------------------------------------------------------------------------
 
         // Prevent underflow
         if(voltage < 0)
@@ -93,35 +105,62 @@ void StatCell::set(double voltage, double temperature, double lowVoltage, bool i
         // Round to 2 decimal places
         voltage = round(voltage * 100) / 100.0;
 
-        // Write first digit
-        // - The " + '0' " adds the digit's value to the start of the numerals in ASCII, this converts an integer to a
-        //   single digit
-        statBuffer[0] = static_cast<int>(trunc(voltage)) + '0';
-        
-        // Insert decimal point
-        statBuffer[1] = '.';
-
-        // Insert new line
-        statBuffer[2] = '\n';
-
-        // Insert first digit
-        // - See above for char addition
-        statBuffer[3] = StatCell::getNthDigit(voltage, 1) + '0';
-        
-        // Insert second digit
-        // - See above for char addition
-        statBuffer[4] = StatCell::getNthDigit(voltage, 2) + '0';
-
-        // Terminate string
+        double voltageInt;
+        double voltageFrac = modf(voltage, &voltageInt);
+        snprintf(statBuffer, 6, "%1u.\n%02u", static_cast<unsigned int>(voltageInt), static_cast<unsigned int>(voltageFrac * 100));
         statBuffer[5] = '\0';
 
         innerStat->setText(statBuffer);
     }
+    else if(mode == ID_MODE_VOLTAGE)
+    {
+        // Disable Border -----------------------------------------------------------------------------------------------------
+        innerFrame->setLineWidth(0);
+
+        // Render Inner / Outer Frame -----------------------------------------------------------------------------------------
+        if(isBalancing)
+        {
+            innerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOn);
+            outerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOn);
+            innerFrame->setPalette(*innerPalette);
+            setPalette(*outerPalette);
+        }
+        else
+        {
+            innerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOff);
+            outerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOff);
+            innerFrame->setPalette(*innerPalette);
+            setPalette(*outerPalette);
+        }
+
+        // Render stat --------------------------------------------------------------------------------------------------------
+
+        // TODO
+    }
     else if(mode == ID_MODE_DELTA)
     {
-        // Render delta -------------------------------------------------------------------------------------------------------
+        // Disable Border -----------------------------------------------------------------------------------------------------
+        innerFrame->setLineWidth(0);
 
-        // Get delta
+        // Render Inner / Outer Frame -----------------------------------------------------------------------------------------
+        if(isBalancing)
+        {
+            innerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOn);
+            outerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOn);
+            innerFrame->setPalette(*innerPalette);
+            setPalette(*outerPalette);
+        }
+        else
+        {
+            innerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOff);
+            outerPalette->setColor(QPalette::ColorRole::Window, *colorBalancingOff);
+            innerFrame->setPalette(*innerPalette);
+            setPalette(*outerPalette);
+        }
+
+        // Render Stat --------------------------------------------------------------------------------------------------------
+
+        // Calculate delta
         double delta = voltage - lowVoltage;
 
         // Prevent underflow
@@ -141,33 +180,30 @@ void StatCell::set(double voltage, double temperature, double lowVoltage, bool i
         // Round to 2 decimal places
         delta = round(delta * 100) / 100.0;
 
-        // Write first digit
-        // - The " + '0' " adds the digits value to the start of the numerals in ASCII, this converts an integer to a
-        //   single digit
-        statBuffer[0] = static_cast<int>(trunc(delta)) + '0';
-
-        // Insert decimal point
-        statBuffer[1] = '.';
-
-        // Insert new line
-        statBuffer[2] = '\n';
-
-        // Insert first digit
-        // - See above for char addition
-        statBuffer[3] = StatCell::getNthDigit(delta, 1) + '0';
-        
-        // Insert second digit
-        // - See above for char addition
-        statBuffer[4] = StatCell::getNthDigit(delta, 2) + '0';
-
-        // Terminate string
+        // TODO
         statBuffer[5] = '\0';
 
         innerStat->setText(statBuffer);
     }
-    else // ID_MODE_TEMPERATURE
+    else if(mode == ID_MODE_TEMPERATURE)
     {
-        // Render temperature -------------------------------------------------------------------------------------------------
+        // Don't render border
+        innerFrame->setLineWidth(0);
+
+        // Temperature
+        double h1 = 120;
+        double s1 = 255;
+        double v1 = 255;
+        double h2 = 0;
+        double s2 = 255;
+        double v2 = 255;
+
+        StatCell::hsvLerp(temperature / 100.0, h1, s1, v1, h2, s2, v2, &h1, &s1, &v1);
+
+        QColor tempColor = QColor::fromHsv(h1, s1, v1);
+
+        innerPalette->setColor(QPalette::ColorRole::Window, tempColor);
+        innerFrame->setPalette(*innerPalette);
 
         // Prevent underflow (TODO: Are negative temperatures important?)
         if(temperature < 0)
@@ -217,76 +253,6 @@ void StatCell::set(double voltage, double temperature, double lowVoltage, bool i
         statBuffer[7] = '\0';
 
         innerStat->setText(statBuffer);
-    }
-
-    // Check how to color inner frame
-    if(mode == ID_MODE_OVERVIEW || mode == ID_MODE_VOLTAGE || mode == ID_MODE_DELTA)
-    {
-        // Balancing
-
-        if(isBalancing)
-        {
-            innerPalette->setColor(QPalette::ColorRole::Window, Qt::cyan);
-            innerFrame->setPalette(*innerPalette);
-        }
-        else
-        {
-            innerPalette->setColor(QPalette::ColorRole::Window, Qt::green);
-            innerFrame->setPalette(*innerPalette);
-        }
-    }
-    else // ID_MODE_TEMPERATURE
-    {
-        // Temperature
-
-        // Temperature
-        double h1 = 120;
-        double s1 = 255;
-        double v1 = 255;
-        double h2 = 0;
-        double s2 = 255;
-        double v2 = 255;
-
-        StatCell::hsvLerp(temperature / 100.0, h1, s1, v1, h2, s2, v2, &h1, &s1, &v1);
-
-        QColor tempColor = QColor::fromHsv(h1, s1, v1);
-
-        innerPalette->setColor(QPalette::ColorRole::Window, tempColor);
-        innerFrame->setPalette(*innerPalette);
-    }
-
-    // Check how to color outer frame
-    if(mode == ID_MODE_OVERVIEW || mode == ID_MODE_TEMPERATURE)
-    {
-        // Temperature
-        double h1 = 120;
-        double s1 = 255;
-        double v1 = 255;
-        double h2 = 0;
-        double s2 = 255;
-        double v2 = 255;
-
-        StatCell::hsvLerp(temperature / 100.0, h1, s1, v1, h2, s2, v2, &h1, &s1, &v1);
-
-        QColor tempColor = QColor::fromHsv(h1, s1, v1);
-
-        outerPalette->setColor(QPalette::ColorRole::Window, tempColor);
-        setPalette(*outerPalette);
-    }
-    else // ID_MODE_VOLTAGE, ID_MODE_DELTA
-    {
-        // Balancing
-
-        if(isBalancing)
-        {
-            outerPalette->setColor(QPalette::ColorRole::Window, Qt::cyan);
-            setPalette(*outerPalette);
-        }
-        else
-        {
-            outerPalette->setColor(QPalette::ColorRole::Window, Qt::green);
-            setPalette(*outerPalette);
-        }
     }
 }
 

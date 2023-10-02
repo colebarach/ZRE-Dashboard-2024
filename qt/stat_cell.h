@@ -18,12 +18,15 @@ class StatCell : public QFrame
     #define PADDING_INNER_FRAME     2    // Padding inside the inner frame, affects space between border and inner text
     #define SIZE_INNER_FRAME_BORDER 1    // Border thickness of the inner frame
 
-    #define ID_MODE_OVERVIEW    0        // ID of overview mode, stat shows voltage, inner frame shows balancing, outer frame
+    #define ID_MODE_OVERVIEW        0    // ID of overview mode, stat shows voltage, inner frame shows balancing, outer frame
                                          // shows temerature range.
-    #define ID_MODE_VOLTAGE     1        // ID of voltage mode, stat shows voltage, inner and outer frames show balancing.
-    #define ID_MODE_DELTA       2        // ID of delta mode, stat shows delta, inner and outer frames show balancing.
-    #define ID_MODE_TEMPERATURE 3        // ID of temperature mode, stat shows temperature, inner and outer frames show
+    #define ID_MODE_VOLTAGE         1    // ID of voltage mode, stat shows voltage, inner and outer frames show balancing.
+    #define ID_MODE_DELTA           2    // ID of delta mode, stat shows delta, inner and outer frames show balancing.
+    #define ID_MODE_TEMPERATURE     3    // ID of temperature mode, stat shows temperature, inner and outer frames show
                                          // temperature range.
+
+    #define COLOR_CELL_BALANCING_ON  120, 200, 200       // RGB color for a balancing cell
+    #define COLOR_CELL_BALANCING_OFF 80,  200, 80        // RGB color for non-balancing cells
 
     // Constructor / Destructor -----------------------------------------------------------------------------------------------
 
@@ -52,6 +55,9 @@ class StatCell : public QFrame
     // Palette
     QPalette* innerPalette;              // Palette for inner frame, used to modify color
     QPalette* outerPalette;              // Palette for outer frame, used to modify color
+
+    QColor* colorBalancingOn;
+    QColor* colorBalancingOff;
 
     // Protected Functions ----------------------------------------------------------------------------------------------------
 

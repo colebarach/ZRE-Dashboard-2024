@@ -16,6 +16,10 @@ namespace Network
         
         CanDbc::parseFile(databaseFilePath, &messages, &signals, &messageCount, &signalCount);
 
+        // Allocate the event array
+        events = new rxEvent_t [messageCount];
+
+        // Allocate the database
         this->allocate(signalCount);
 
         for(size_t index = 0; index < signalCount; ++index)
@@ -181,6 +185,9 @@ namespace Network
                         }
                     }
 
+                    // Invoke the RX event handler
+                    database->events [messageIndex] ();
+
                     messageFound = true;
                 }
 
@@ -197,6 +204,20 @@ namespace Network
         }
 
         return NULL;
+    }
+
+    void CanDatabase::setRxEvent(const char* messageName, rxEvent_t event)
+    {
+        for(size_t messageIndex = 0; messageIndex < messageCount; ++messageIndex)
+        {
+            if (strcmp (messages [messageIndex].name, messageName) == 0)
+            {
+                events [messageIndex] = event;
+                return;
+            }
+        }
+
+        LOG_WARN ("Failed to set RX event for message '%s': Message not found.", messageName);
     }
 
     void CanDatabase::startRxThread()

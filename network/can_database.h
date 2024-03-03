@@ -30,6 +30,11 @@
 
 namespace Network
 {
+    // Datatypes --------------------------------------------------------------------------------------------------------------
+
+    // Event handler for when a message is received.
+    typedef void (*rxEvent_t) ();
+
     class CanDatabase : public Database
     {
         // Constants ----------------------------------------------------------------------------------------------------------
@@ -51,6 +56,8 @@ namespace Network
         CanSignal*  signals;             // Signal array. Parallel array to the database entry array.
         size_t      messageCount;        // Number of messages in the message array.
         size_t      signalCount;         // Number of signals in the signal array.
+
+        rxEvent_t*  events;              // Array of RX event handlers, parallel array to the messages array.
 
         bool rxThreadControl;            // Control / status of the RX thread. If set to false, the thread will terminate.
         bool rxThreadDebug;              // RX thread debug control.
@@ -109,6 +116,12 @@ namespace Network
         // - Writes received data to the appropriate entry, ignores if unknown
         // - Will continue to scan until the RX control is set false  
         static void* scanRx(void* database_);
+
+        // Events -------------------------------------------------------------------------------------------------------------
+
+        // Set RX Event
+        // - Sets a function to call when a specific message is received.
+        void setRxEvent(const char* messageName, rxEvent_t event);
 
         // Accessors ----------------------------------------------------------------------------------------------------------
 

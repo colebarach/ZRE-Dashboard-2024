@@ -3,4 +3,4 @@ bin
 lib
 obj
 qt_build
-qt/dash_qt.pro.user
+qt/dash_qt.pro.user*

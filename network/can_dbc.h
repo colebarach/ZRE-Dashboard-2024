@@ -29,7 +29,7 @@ namespace Network
     {
         // Compilation Flags --------------------------------------------------------------------------------------------------
 
-        // #define LOG_ENTRY_PARSING     // Print the interpretation of the database to the standard output. Use for debugging.
+        #define LOG_ENTRY_PARSING     // Print the interpretation of the database to the standard output. Use for debugging.
 
         // Constants ----------------------------------------------------------------------------------------------------------
 

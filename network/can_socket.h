@@ -72,6 +72,7 @@ namespace Network
         double       scaleFactor;            // 
         double       offset;                 // 
         bool         signedness;             // false => unsigned, true => signed
+        bool         endianness;             // false => little endian, true => big endian
     };
 
     // Functions --------------------------------------------------------------------------------------------------------------

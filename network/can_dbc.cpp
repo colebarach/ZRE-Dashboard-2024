@@ -175,7 +175,8 @@ namespace Network
                     signal->bitLength   = static_cast<uint16_t>(bitLength);
                     signal->scaleFactor = scaleFactor;
                     signal->offset      = offset;
-                    signal->signedness  = signedness == '-';
+                    signal->signedness  = (signedness == '-');
+                    signal->endianness  = (endianness == 1); // TODO: Random values
 
                     // Populate bitmask
                     signal->bitMask = 0;

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>764</width>
-    <height>496</height>
+    <width>800</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="palette">
@@ -485,8 +485,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>744</width>
-        <height>444</height>
+        <width>776</width>
+        <height>416</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">

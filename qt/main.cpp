@@ -11,11 +11,20 @@
 // C++ Libraries
 #include <exception>
 
+// Entrypoint -----------------------------------------------------------------------------------------------------------------
+
 int main(int argc, char *argv[])
 {
     try
     {
         QApplication application(argc, argv);
+
+        // Validate arguments
+        if (argc != 3)
+        {
+            LOG_FATAL ("Invalid usage. Usage: dash-qt <device name> <dbd file name>\n");
+            return 1;
+        }
 
         Network::CanDatabase database(argv[2], argv[1]);
 

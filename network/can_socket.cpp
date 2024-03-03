@@ -48,7 +48,7 @@ namespace Network
         {
             this->errorCode = errno;
             LOG_ERROR("Failed to get index of CAN device '%s': %s\n", deviceName, strerror(this->errorCode));
-            throw std::runtime_error(std::string("Failed to get index of CAN interface \"") + deviceName + "\": " + std::string(strerror(this->errorCode)));
+            throw std::runtime_error(std::string("Failed to get index of CAN device \"") + deviceName + "\": " + std::string(strerror(this->errorCode)));
         }
 
         // Allocate the CAN socket address

@@ -1,5 +1,5 @@
-# ZRE Dashboard 2024
-This is a C++ application for the dashboard of an FSAE vehicle.
+# ZRE Dashboard 2024 (Deprecated)
+This is a C++ application for the dashboard of an FSAE vehicle. **Note this project has been abandoned in favor of a smaller-scope solution.**
 ## Overview
 ### Network Library
 Used for interfacing with the operating system's network devices. CAN functionality is implemented here.
